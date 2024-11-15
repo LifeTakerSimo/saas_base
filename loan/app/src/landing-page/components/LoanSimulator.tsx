@@ -140,7 +140,7 @@ export default function LoanSimulator() {
               <Button 
                 onClick={() => setShowAmortizationTable(!showAmortizationTable)}
                 variant="outline"
-                className="w-full mt-2"
+                className="text-white w-full mt-2"
               >
                 {showAmortizationTable ? 'Hide' : 'Show'} Amortization Schedule
               </Button>

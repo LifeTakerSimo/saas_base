@@ -15,7 +15,10 @@ export default function App() {
   const { data: user } = useAuth();
 
   const shouldDisplayAppNavBar = useMemo(() => {
-    return location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/signup';
+    return location.pathname !== '/' && location.pathname !== '/login' 
+    && location.pathname !== '/signup' 
+    && location.pathname !== '/password-reset' 
+    && location.pathname !== '/request-password-reset';
   }, [location]);
 
   const isAdminDashboard = useMemo(() => {
