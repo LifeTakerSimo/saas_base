@@ -97,4 +97,11 @@
 .auth-form select,
 .auth-form textarea {
   @apply text-white;
+}
+
+/* Add this to your existing authStyles.css */
+.auth-form h2,
+.auth-container h2 {
+  @apply text-white text-3xl font-bold !important;
+  margin-top: 1.5rem !important;
 } 

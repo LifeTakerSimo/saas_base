@@ -309,7 +309,7 @@ export default function LandingPage() {
                       { 
                         feature: "API Access", 
                         basic: "✗", 
-                        pro: "✓", 
+                        pro: "��", 
                         enterprise: "✓" 
                       },
                       { 
@@ -377,7 +377,75 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        <section className="w-full py-24 bg-gradient-to-b from-black via-gray-900 to-black">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="relative p-8 bg-gradient-to-b from-purple-900/30 via-black/50 to-black/50 border-2 border-purple-500 rounded-xl overflow-hidden">
+                {/* Animated background effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 animate-pulse"></div>
                 
+                {/* Content */}
+                <div className="relative z-10 text-center space-y-6">
+                  {/* Special offer badge */}
+                  <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-500 rounded-full text-white text-sm font-medium mb-4">
+                    <span className="animate-pulse mr-2">🔥</span> Limited Time Offer
+                  </div>
+                  
+                  <h2 className="text-4xl font-bold">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                      Lifetime Access
+                    </span>
+                  </h2>
+                  
+                  <div className="flex justify-center items-baseline space-x-2">
+                    <span className="text-gray-400 text-lg line-through">€29/month</span>
+                    <span className="text-5xl font-bold text-white">€5</span>
+                    <span className="text-gray-400 text-xl">/lifetime</span>
+                  </div>
+                  
+                  <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+                    Join now and lock in lifetime access to all Pro features for a one-time payment of just €5
+                  </p>
+                  
+                  {/* Timer */}
+                  <div className="text-gray-400 text-sm">
+                    Limited offer - Only for the first 100 users
+                  </div>
+                  
+                  {/* Feature list */}
+                  <ul className="text-left space-y-3 max-w-md mx-auto mt-6">
+                    {[
+                      "Lifetime access to all Pro features",
+                      "No monthly fees ever",
+                      "Free updates for life",
+                      "Priority support",
+                      "Lock in early adopter benefits"
+                    ].map((feature, i) => (
+                      <li key={i} className="flex items-center text-gray-300">
+                        <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  {/* CTA Button */}
+                  <div className="mt-8">
+                    <Button 
+                      className="bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-medium px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 active:scale-95"
+                    >
+                      Get Lifetime Access Now
+                    </Button>
+                    
+                    <p className="text-gray-500 text-sm mt-4">
+                      30-day money-back guarantee • Secure payment
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
         <section className="w-full py-24 lg:py-32 relative bg-gradient-to-b from-black via-gray-900 to-black mt-24">
           <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black transform scale-y-150"></div>
           <div className="relative z-10">
@@ -414,7 +482,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
         <Footer />
       </main>
     </div>

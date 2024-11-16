@@ -35,8 +35,8 @@ export default function Login() {
               </Link>
             </p>
             
-            <p className="text-sm text-white">
-              Forgot your password?{' '}
+            <p className="text-center text-white">
+              Forgot your password ?{' '}
               <Link 
                 to="/request-password-reset" 
                 className="text-purple-500 hover:text-purple-400 transition-colors font-medium"
