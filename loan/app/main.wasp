@@ -48,14 +48,14 @@ app OpenSaaS {
       //   userSignupFields: import { getGoogleUserFields } from "@src/auth/userSignupFields",
       //   configFn: import { getGoogleAuthConfig } from "@src/auth/userSignupFields",
       // },
-      gitHub: {
-        userSignupFields: import { getGitHubUserFields } from "@src/auth/userSignupFields",
-        configFn: import { getGitHubAuthConfig } from "@src/auth/userSignupFields",
-       },
-       discord: {
-         userSignupFields: import { getDiscordUserFields } from "@src/auth/userSignupFields",
-         configFn: import { getDiscordAuthConfig } from "@src/auth/userSignupFields"
-       }
+      // gitHub: {
+      //   userSignupFields: import { getGitHubUserFields } from "@src/auth/userSignupFields",
+      //   configFn: import { getGitHubAuthConfig } from "@src/auth/userSignupFields",
+      // },
+      // discord: {
+      //   userSignupFields: import { getDiscordUserFields } from "@src/auth/userSignupFields",
+      //   configFn: import { getDiscordAuthConfig } from "@src/auth/userSignupFields"
+      // }
     },
     onAfterSignup: import { onAfterSignup } from "@src/auth/hooks",
     onAuthFailedRedirectTo: "/login",

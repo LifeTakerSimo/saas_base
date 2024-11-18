@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { ResetPasswordForm } from 'wasp/client/auth';
 import { AuthPageLayout } from '../AuthPageLayout';
 import { authAppearance } from './../authConfig';
-
+import '../../styles/global.css';
 export function PasswordResetPage() {
   return (
     <AuthPageLayout>
@@ -18,7 +18,7 @@ export function PasswordResetPage() {
           </p>
         </div>
 
-        <div className="w-full space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-xl border-2 border-gray-800 hover:border-purple-500/50 transition-all duration-500 group">
+        <div className="w-full space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-xl border-2 border-gray-800 hover:border-purple-500/50 transition-all duration-500 group custom-form">
           <ResetPasswordForm appearance={authAppearance} />
           <div className="text-center pt-4 border-t border-gray-800">
             <span className='text-sm text-gray-400'>

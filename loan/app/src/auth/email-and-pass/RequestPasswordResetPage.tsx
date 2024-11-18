@@ -2,6 +2,7 @@ import { ForgotPasswordForm } from 'wasp/client/auth';
 import { AuthPageLayout } from '../AuthPageLayout';
 import { authAppearance } from './../authConfig';
 import { Link } from 'wasp/client/router';
+import '../../styles/global.css';
 
 export function RequestPasswordResetPage() {
   return (
@@ -19,7 +20,7 @@ export function RequestPasswordResetPage() {
           </p>
         </div>
 
-        <div className="w-full space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-xl border-2 border-gray-800 hover:border-purple-500/50 transition-all duration-500 group">
+        <div className="w-full space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-xl border-2 border-gray-800 hover:border-purple-500/50 transition-all duration-500 group custom-form">
           <ForgotPasswordForm appearance={authAppearance} />
           <div className="text-center pt-4 border-t border-gray-800">
             <span className='text-white'>

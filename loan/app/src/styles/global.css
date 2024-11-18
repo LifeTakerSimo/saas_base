@@ -315,3 +315,12 @@
     @apply text-white !important;
   }
 }
+
+
+.custom-form {
+  color: #ffffff; /* Change the color of the main heading */
+}
+
+.custom-form h2, .custom-form h1{
+  color: #ffffff; /* Change the color of the main heading */
+}

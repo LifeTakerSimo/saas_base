@@ -21,8 +21,8 @@ export function Signup() {
         </div>
 
         {/* Signup Form Container */}
-        <div className="w-full space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-xl border-2 border-gray-800 hover:border-purple-500/50 transition-all duration-500 group">
-          <SignupForm appearance={authAppearance} />
+        <div className="w-full space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-xl border-2 border-gray-800 hover:border-purple-500/50 transition-all duration-500 group custom-form">
+          <SignupForm appearance={authAppearance} socialLayout="vertical"/>
           
           <div className="space-y-4 text-center pt-4 border-t border-gray-800">
             <p className="text-white">
