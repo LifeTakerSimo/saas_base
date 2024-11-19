@@ -31,8 +31,8 @@ app OpenSaaS {
       //   (RequestPasswordReset(Route|Page), PasswordReset(Route|Page), EmailVerification(Route|Page))
       email: {
         fromField: {
-          name: "Open SaaS Ap",
-          email: "me@example.com"
+          name: "loan",
+          email: "lifestaker.simo@gmail.com"
         },
         emailVerification: {
           clientRoute: EmailVerificationRoute,
@@ -80,9 +80,9 @@ app OpenSaaS {
     //   Once you are ready for production, switch to e.g. "SendGrid" or "Mailgun" providers. Check out https://docs.opensaas.sh/guides/email-sending/ .
     provider: SendGrid,
     defaultFrom: {
-      name: "Open SaaS App",
-      // When using a real provider, e.g. SendGrid, you must use the same email address that you configured your account to send out emails with!
-      email: "me@example.com"
+      name: "loan",
+      email: "lifestaker.simo@gmail.com"
+      // When using a real provider, e.g. SendGrid, you must use the same email address that you configured your account to send out emails with! 
     },
   },
 }

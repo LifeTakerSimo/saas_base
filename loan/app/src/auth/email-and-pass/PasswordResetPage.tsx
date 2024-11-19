@@ -21,7 +21,7 @@ export function PasswordResetPage() {
         <div className="w-full space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-xl border-2 border-gray-800 hover:border-purple-500/50 transition-all duration-500 group custom-form">
           <ResetPasswordForm appearance={authAppearance} />
           <div className="text-center pt-4 border-t border-gray-800">
-            <span className='text-sm text-gray-400'>
+            <span className='text-sm text-white'>
               If everything is okay, {' '}
               <Link to='/login' className='text-purple-500 hover:text-purple-400 transition-colors'>
                 go to login

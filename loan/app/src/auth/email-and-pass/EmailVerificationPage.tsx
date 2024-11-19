@@ -7,7 +7,7 @@ export function EmailVerificationPage() {
     <AuthPageLayout>
       <VerifyEmailForm />
       <br />
-      <span className='text-sm font-medium text-gray-900'>
+      <span className='text-sm text-white font-medium text-gray-900'>
         If everything is okay, <Link to='/login' className='underline'>go to login</Link>
       </span>
     </AuthPageLayout>
