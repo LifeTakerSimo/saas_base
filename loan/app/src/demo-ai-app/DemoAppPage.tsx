@@ -1,407 +1,558 @@
-import { type Task } from 'wasp/entities';
+import { useState } from 'react';
 
-import {
-  generateGptResponse,
-  deleteTask,
-  updateTask,
-  createTask,
-  useQuery,
-  getAllTasksByUser,
-} from 'wasp/client/operations';
+type Property = {
+  id: string;
+  createdAt: string;
+  title: string;
+  description: string;
+  price: number;
+  surface: number;
+  type: string;
+  bedrooms: number;
+  bathrooms: number;
+  location: string;
+  imageUrl: string;
+  images: string[];
+  features: string[];
+  status: string;
+}
 
-import { useState, useMemo } from 'react';
-import { CgSpinner } from 'react-icons/cg';
-import { TiDelete } from 'react-icons/ti';
-import type { GeneratedSchedule, MainTask, SubTask } from './schedule';
-import { cn } from '../client/cn';
+// Mock data
+const mockProperties: Property[] = [
+  {
+    id: '1',
+    createdAt: new Date().toISOString().split('T')[0],
+    title: 'Belle Villa Moderne',
+    description: 'Magnifique villa avec vue sur mer, prestations haut de gamme, piscine à débordement et jardin paysager',
+    price: 450000,
+    surface: 200,
+    type: 'villa',
+    bedrooms: 4,
+    bathrooms: 3,
+    location: 'Nice',
+    imageUrl: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=500',
+    images: [
+      'https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=500',
+      'https://images.unsplash.com/photo-1613977257363-707ba9348227?q=80&w=500',
+      'https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?q=80&w=500',
+    ],
+    features: ['Piscine', 'Jardin', 'Vue mer', 'Garage'],
+    status: 'À vendre'
+  },
+  {
+    id: '2',
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    title: 'Appartement Haussmannien',
+    description: 'Superbe appartement avec moulures et parquet d\'époque, proche des Champs-Élysées',
+    price: 880000,
+    surface: 85,
+    type: 'apartment',
+    bedrooms: 2,
+    bathrooms: 1,
+    location: 'Paris 8ème',
+    imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=500',
+    images: [
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=500',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=500',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=500',
+    ],
+    features: ['Parking', 'Balcon', 'Ascenseur', 'Cave'],
+    status: 'À vendre'
+  },
+  {
+    id: '3',
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    title: 'Loft Industriel',
+    description: 'Ancien atelier rénové avec goût, grandes hauteurs sous plafond et matériaux nobles',
+    price: 595000,
+    surface: 120,
+    type: 'loft',
+    bedrooms: 2,
+    bathrooms: 2,
+    location: 'Lyon',
+    imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=500',
+    images: [
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=500',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=500',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=500',
+    ],
+    features: ['Style industriel', 'Terrasse', 'Climatisation'],
+    status: 'À vendre'
+  },
+  {
+    id: '4',
+    createdAt: '2024-03-17',
+    title: 'Maison Contemporaine',
+    description: 'Maison d\'architecte aux lignes épurées avec domotique intégrée et performances énergétiques',
+    price: 720000,
+    surface: 160,
+    type: 'house',
+    bedrooms: 4,
+    bathrooms: 2,
+    location: 'Bordeaux',
+    imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500',
+    images: [
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500',
+    ],
+    features: ['Domotique', 'Jardin', 'Garage double'],
+    status: 'À vendre'
+  },
+  {
+    id: '5',
+    createdAt: '2024-03-16',
+    title: 'Duplex avec Rooftop',
+    description: 'Magnifique duplex avec terrasse sur le toit offrant une vue panoramique sur la ville',
+    price: 495000,
+    surface: 95,
+    type: 'apartment',
+    bedrooms: 3,
+    bathrooms: 2,
+    location: 'Marseille',
+    imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=500',
+    images: [
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=500',
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=500',
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=500',
+    ],
+    features: ['Terrasse', 'Vue panoramique', 'Climatisation'],
+    status: 'À vendre'
+  },
+  {
+    id: '6',
+    createdAt: '2024-03-15',
+    title: 'Maison de Ville',
+    description: 'Charmante maison de ville avec cour intérieure et dépendance aménageable',
+    price: 385000,
+    surface: 140,
+    type: 'house',
+    bedrooms: 3,
+    bathrooms: 2,
+    location: 'Nantes',
+    imageUrl: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=500',
+    images: [
+      'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=500',
+      'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=500',
+      'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=500',
+    ],
+    features: ['Cour intérieure', 'Cave à vin', 'Dépendance'],
+    status: 'À vendre'
+  },
+  {
+    id: '7',
+    createdAt: '2024-03-14',
+    title: 'Studio Premium',
+    description: 'Studio haut de gamme entièrement meublé et équipé, idéal investissement locatif',
+    price: 245000,
+    surface: 35,
+    type: 'studio',
+    bedrooms: 1,
+    bathrooms: 1,
+    location: 'Paris 16ème',
+    imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=500',
+    images: [
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=500',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=500',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=500',
+    ],
+    features: ['Meublé', 'Équipé', 'Gardien'],
+    status: 'À vendre'
+  },
+  {
+    id: '8',
+    createdAt: '2024-03-13',
+    title: 'Villa Provençale',
+    description: 'Authentique villa provençale avec oliviers centenaires et piscine traditionnelle',
+    price: 890000,
+    surface: 250,
+    type: 'villa',
+    bedrooms: 5,
+    bathrooms: 3,
+    location: 'Aix-en-Provence',
+    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=500',
+    images: [
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=500',
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=500',
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=500',
+    ],
+    features: ['Piscine', 'Oliveraie', 'Pool house'],
+    status: 'À vendre'
+  },
+  {
+    id: '9',
+    createdAt: '2024-03-12',
+    title: 'Penthouse Design',
+    description: 'Penthouse d\'exception avec terrasses et jacuzzi, vue imprenable sur la ville',
+    price: 1250000,
+    surface: 180,
+    type: 'penthouse',
+    bedrooms: 4,
+    bathrooms: 3,
+    location: 'Lyon',
+    imageUrl: 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?q=80&w=500',
+    images: [
+      'https://images.unsplash.com/photo-1600607687644-c7171b42498b?q=80&w=500',
+      'https://images.unsplash.com/photo-1600607687644-c7171b42498b?q=80&w=500',
+      'https://images.unsplash.com/photo-1600607687644-c7171b42498b?q=80&w=500',
+    ],
+    features: ['Jacuzzi', 'Domotique', 'Cave à vin'],
+    status: 'À vendre'
+  }
+];
 
-export default function DemoAppPage() {
+export default function PropertiesPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    minPrice: '',
+    maxPrice: '',
+    minSurface: '',
+    maxSurface: '',
+    type: 'all',
+  });
+
+  // Filter properties based on search and filters
+  const filteredProperties = mockProperties.filter((property: Property) => {
+    const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         property.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         property.location.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesType = filters.type === 'all' || property.type === filters.type;
+    const matchesMinPrice = !filters.minPrice || property.price >= Number(filters.minPrice);
+    const matchesMaxPrice = !filters.maxPrice || property.price <= Number(filters.maxPrice);
+    const matchesMinSurface = !filters.minSurface || property.surface >= Number(filters.minSurface);
+    const matchesMaxSurface = !filters.maxSurface || property.surface <= Number(filters.maxSurface);
+
+    return matchesSearch && matchesType && matchesMinPrice && matchesMaxPrice && 
+           matchesMinSurface && matchesMaxSurface;
+  });
+
+  if (filteredProperties.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-red-500">Aucun bien immobilier trouvé</div>
+      </div>
+    );
+  }
+
   return (
-    <div className='py-10 lg:mt-10'>
-      <div className='mx-auto max-w-7xl px-6 lg:px-8'>
-        <div className='mx-auto max-w-4xl text-center'>
-          <h2 className='mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white'>
-            <span className='text-yellow-500'>AI</span> Day Scheduler
-          </h2>
-        </div>
-        <p className='mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600 dark:text-white'>
-          This example app uses OpenAI's chat completions with function calling to return a structured JSON object. Try
-          it out, enter your day's tasks, and let AI do the rest!
-        </p>
-        {/* begin AI-powered Todo List */}
-        <div className='my-8 border rounded-3xl border-gray-900/10 dark:border-gray-100/10'>
-          <div className='sm:w-[90%] md:w-[70%] lg:w-[50%] py-10 px-6 mx-auto my-8 space-y-10'>
-            <NewTaskForm handleCreateTask={createTask} />
+    <div className="min-h-screen bg-gray-100 dark:bg-boxdark">
+      <div className="container mx-auto px-4 py-8">
+        {/* Search and Filters Section */}
+        <div className="bg-white dark:bg-boxdark-2 rounded-lg shadow-lg p-6 mb-8">
+          <div className="space-y-4">
+            {/* Search Input */}
+            <div>
+              <input
+                type="text"
+                placeholder="Rechercher par titre, description ou localisation..."
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-strokedark dark:bg-boxdark focus:ring-2 focus:ring-primary"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <select
+                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-strokedark dark:bg-boxdark focus:ring-2 focus:ring-primary"
+                value={filters.type}
+                onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+              >
+                <option value="all">Tous les types</option>
+                <option value="apartment">Appartement</option>
+                <option value="house">Maison</option>
+                <option value="villa">Villa</option>
+              </select>
+
+              <input
+                type="number"
+                placeholder="Prix min"
+                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-strokedark dark:bg-boxdark focus:ring-2 focus:ring-primary"
+                value={filters.minPrice}
+                onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
+              />
+
+              <input
+                type="number"
+                placeholder="Prix max"
+                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-strokedark dark:bg-boxdark focus:ring-2 focus:ring-primary"
+                value={filters.maxPrice}
+                onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
+              />
+
+              <input
+                type="number"
+                placeholder="Surface min"
+                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-strokedark dark:bg-boxdark focus:ring-2 focus:ring-primary"
+                value={filters.minSurface}
+                onChange={(e) => setFilters({ ...filters, minSurface: e.target.value })}
+              />
+
+              <input
+                type="number"
+                placeholder="Surface max"
+                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-strokedark dark:bg-boxdark focus:ring-2 focus:ring-primary"
+                value={filters.maxSurface}
+                onChange={(e) => setFilters({ ...filters, maxSurface: e.target.value })}
+              />
+            </div>
           </div>
         </div>
-        {/* end AI-powered Todo List */}
+
+        {/* Properties Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredProperties.map((property: Property) => (
+            <PropertyCard key={property.id} property={property} />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-function NewTaskForm({ handleCreateTask }: { handleCreateTask: typeof createTask }) {
-  const [description, setDescription] = useState<string>('');
-  const [todaysHours, setTodaysHours] = useState<string>('8');
-  const [response, setResponse] = useState<GeneratedSchedule | null>({
-    mainTasks: [
-      {
-        name: 'Respond to emails',
-        priority: 'high',
-      },
-      {
-        name: 'Learn WASP',
-        priority: 'low',
-      },
-      {
-        name: 'Read a book',
-        priority: 'medium',
-      },
-    ],
-    subtasks: [
-      {
-        description: 'Read introduction and chapter 1',
-        time: 0.5,
-        mainTaskName: 'Read a book',
-      },
-      {
-        description: 'Read chapter 2 and take notes',
-        time: 0.3,
-        mainTaskName: 'Read a book',
-      },
-      {
-        description: 'Read chapter 3 and summarize key points',
-        time: 0.2,
-        mainTaskName: 'Read a book',
-      },
-      {
-        description: 'Check and respond to important emails',
-        time: 1,
-        mainTaskName: 'Respond to emails',
-      },
-      {
-        description: 'Organize and prioritize remaining emails',
-        time: 0.5,
-        mainTaskName: 'Respond to emails',
-      },
-      {
-        description: 'Draft responses to urgent emails',
-        time: 0.5,
-        mainTaskName: 'Respond to emails',
-      },
-      {
-        description: 'Watch tutorial video on WASP',
-        time: 0.5,
-        mainTaskName: 'Learn WASP',
-      },
-      {
-        description: 'Complete online quiz on the basics of WASP',
-        time: 1.5,
-        mainTaskName: 'Learn WASP',
-      },
-      {
-        description: 'Review quiz answers and clarify doubts',
-        time: 1,
-        mainTaskName: 'Learn WASP',
-      },
-    ],
-  });
-  const [isPlanGenerating, setIsPlanGenerating] = useState<boolean>(false);
-
-  const { data: tasks, isLoading: isTasksLoading } = useQuery(getAllTasksByUser);
-
-  const handleSubmit = async () => {
-    try {
-      await handleCreateTask({ description });
-      setDescription('');
-    } catch (err: any) {
-      window.alert('Error: ' + (err.message || 'Something went wrong'));
-    }
+function PropertyCard({ property }: { property: Property }) {
+  const isNew = () => {
+    const propertyDate = new Date(property.createdAt);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - propertyDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 7;
   };
 
-  const handleGeneratePlan = async () => {
-    try {
-      setIsPlanGenerating(true);
-      const response = await generateGptResponse({
-        hours: todaysHours,
-      });
-      if (response) {
-        setResponse(response);
-      }
-    } catch (err: any) {
-      window.alert('Error: ' + (err.message || 'Something went wrong'));
-    } finally {
-      setIsPlanGenerating(false);
-    }
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(true);
+  const images = property.images?.length ? property.images : [property.imageUrl];
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowTooltip(false);
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const previousImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowTooltip(false);
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  // Reset tooltip visibility when mouse enters the center area
+  const handleCenterAreaMouseEnter = () => {
+    setShowTooltip(true);
   };
 
   return (
-    <div className='flex flex-col justify-center gap-10'>
-      <div className='flex flex-col gap-3'>
-        <div className='flex items-center justify-between gap-3'>
-          <input
-            type='text'
-            id='description'
-            className='text-sm text-gray-600 w-full rounded-md border border-gray-200 bg-[#f5f0ff] shadow-md focus:outline-none focus:border-transparent focus:shadow-none duration-200 ease-in-out hover:shadow-none'
-            placeholder='Enter task description'
-            value={description}
-            onChange={(e) => setDescription(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSubmit();
-              }
-            }}
-          />
-          <button
-            type='button'
-            onClick={handleSubmit}
-            className='min-w-[7rem] font-medium text-gray-800/90 bg-yellow-50 shadow-md ring-1 ring-inset ring-slate-200 py-2 px-4 rounded-md hover:bg-yellow-100 duration-200 ease-in-out focus:outline-none focus:shadow-none hover:shadow-none'
-          >
-            Add Task
-          </button>
+    <div className='group relative bg-white dark:bg-boxdark rounded-2xl shadow-lg overflow-hidden 
+                    transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl
+                    hover:shadow-primary/20 cursor-pointer'>
+      {/* Image Container */}
+      <div className='relative h-64 overflow-hidden'>
+        {isNew() && (
+          <div className='absolute top-4 right-4 z-20'>
+            <div className='bg-primary text-white text-xs font-semibold px-2.5 py-1 rounded-full
+                          shadow-lg backdrop-blur-sm animate-pulse'>
+              Nouveau
+            </div>
+          </div>
+        )}
+        
+        {/* Navigation Arrows */}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={previousImage}
+              className='absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full
+                       bg-black/30 text-white hover:bg-black/50 transition-colors
+                       backdrop-blur-sm opacity-0 group-hover:opacity-100'
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={nextImage}
+              className='absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full
+                       bg-black/30 text-white hover:bg-black/50 transition-colors
+                       backdrop-blur-sm opacity-0 group-hover:opacity-100'
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </>
+        )}
+
+        {/* Center area for tooltip trigger */}
+        <div 
+          className='absolute top-0 left-1/4 right-1/4 h-full z-10'
+          onMouseEnter={handleCenterAreaMouseEnter}
+        />
+
+        {/* Image */}
+        <img
+          src={images[currentImageIndex]}
+          alt={property.title}
+          className='w-full h-full object-cover transition-transform duration-700 ease-in-out 
+                     group-hover:scale-110'
+        />
+
+        {/* Image Indicators */}
+        {images.length > 1 && (
+          <div className='absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1.5'>
+            {images.map((_, index) => (
+              <div
+                key={index}
+                className={`w-1.5 h-1.5 rounded-full transition-colors
+                          ${index === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Gradient Overlay */}
+        <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent'/>
+
+        {/* Location Badge */}
+        <div className='absolute bottom-4 left-4 z-10'>
+          <div className='flex items-center text-white bg-black/30 backdrop-blur-sm 
+                         rounded-lg px-3 py-1.5 transition-all duration-300
+                         group-hover:bg-black/50'>
+            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            {property.location}
+          </div>
+        </div>
+
+        {/* Rental Info Tooltip - Modified to respect showTooltip state */}
+        <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center 
+                       opacity-0 ${showTooltip ? 'group-hover:opacity-100' : ''} transition-opacity duration-300`}>
+          <div className='bg-black/70 backdrop-blur-md p-6 rounded-xl transform 
+                         translate-y-4 group-hover:translate-y-0 transition-transform duration-300
+                         text-white shadow-xl mx-4'>
+            <div className='grid grid-cols-3 gap-6'>
+              {/* Rendement Brut */}
+              <div className='text-center'>
+                <div className='text-primary font-bold text-2xl mb-1'>
+                  5.2%
+                </div>
+                <div className='text-xs text-gray-300'>
+                  Rendement Brut
+                </div>
+              </div>
+
+              {/* Rendement Ville */}
+              <div className='text-center border-x border-gray-500/30 px-4'>
+                <div className='text-green-400 font-bold text-2xl mb-1'>
+                  4.8%
+                </div>
+                <div className='text-xs text-gray-300'>
+                  Rendement Ville
+                </div>
+              </div>
+
+              {/* Loyer Conseillé */}
+              <div className='text-center'>
+                <div className='text-white font-bold text-2xl mb-1'>
+                  {Math.round(property.price * 0.004).toLocaleString()}€
+                </div>
+                <div className='text-xs text-gray-300'>
+                  Loyer Conseillé
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Info */}
+            <div className='mt-4 pt-4 border-t border-gray-500/30 text-center'>
+              <span className='text-xs text-gray-300'>
+                Rentabilité supérieure à la moyenne de la ville
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className='space-y-10 col-span-full'>
-        {isTasksLoading && <div>Loading...</div>}
-        {tasks!! && tasks.length > 0 ? (
-          <div className='space-y-4'>
-            {tasks.map((task: Task) => (
-              <Todo key={task.id} id={task.id} isDone={task.isDone} description={task.description} time={task.time} />
-            ))}
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center justify-between gap-3'>
-                <label htmlFor='time' className='text-sm text-gray-600 dark:text-gray-300 text-nowrap font-semibold'>
-                  How many hours will you work today?
-                </label>
-                <input
-                  type='number'
-                  id='time'
-                  step={0.5}
-                  min={1}
-                  max={24}
-                  className='min-w-[7rem] text-gray-800/90 text-center font-medium rounded-md border border-gray-200 bg-yellow-50 hover:bg-yellow-100 shadow-md focus:outline-none focus:border-transparent focus:shadow-none duration-200 ease-in-out hover:shadow-none'
-                  value={todaysHours}
-                  onChange={(e) => setTodaysHours(e.currentTarget.value)}
-                />
+      {/* Content */}
+      <div className='p-5'>
+        <div className='flex justify-between items-start mb-4'>
+          <h3 className='text-lg font-bold text-black dark:text-white line-clamp-1 
+                        group-hover:text-primary transition-colors duration-300'>
+            {property.title}
+          </h3>
+          <span className='text-primary font-bold text-lg'>
+            {property.price.toLocaleString()}€
+          </span>
+        </div>
+
+        {/* Description and Analysis Container */}
+        <div className='bg-gray-50 dark:bg-boxdark-2 rounded-xl p-4 mb-4'>
+          {/* Description */}
+          <p className='text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3'>
+            {property.description}
+          </p>
+          
+          {/* Market Analysis */}
+          <div className='border-t border-gray-200 dark:border-gray-700 pt-3'>
+            <h4 className='text-sm font-semibold text-primary mb-2'>Analyse du marché</h4>
+            <div className='grid grid-cols-2 gap-3 text-xs'>
+              <div className='flex flex-col'>
+                <span className='text-gray-500 dark:text-gray-400'>Prix/m²</span>
+                <span className='font-medium text-black dark:text-white'>
+                  {Math.round(property.price / property.surface).toLocaleString()}€
+                </span>
+              </div>
+              <div className='flex flex-col'>
+                <span className='text-gray-500 dark:text-gray-400'>Prix moyen du quartier</span>
+                <span className='font-medium text-black dark:text-white'>
+                  {(property.price * 0.95).toLocaleString()}€
+                </span>
+              </div>
+              <div className='flex flex-col'>
+                <span className='text-gray-500 dark:text-gray-400'>Potentiel locatif</span>
+                <span className='font-medium text-green-500'>Élevé</span>
+              </div>
+              <div className='flex flex-col'>
+                <span className='text-gray-500 dark:text-gray-400'>Évolution prix</span>
+                <span className='font-medium text-primary'>+3.5% /an</span>
               </div>
             </div>
           </div>
-        ) : (
-          <div className='text-gray-600 text-center'>Add tasks to begin</div>
-        )}
-      </div>
-
-      <button
-        type='button'
-        disabled={isPlanGenerating || tasks?.length === 0}
-        onClick={() => handleGeneratePlan()}
-        className='flex items-center justify-center min-w-[7rem] font-medium text-gray-800/90 bg-yellow-50 shadow-md ring-1 ring-inset ring-slate-200 py-2 px-4 rounded-md hover:bg-yellow-100 duration-200 ease-in-out focus:outline-none focus:shadow-none hover:shadow-none disabled:opacity-70 disabled:cursor-not-allowed'
-      >
-        {isPlanGenerating ? (
-          <>
-            <CgSpinner className='inline-block mr-2 animate-spin' />
-            Generating...
-          </>
-        ) : (
-          'Generate Schedule'
-        )}
-      </button>
-
-      {!!response && (
-        <div className='flex flex-col'>
-          <h3 className='text-lg font-semibold text-gray-900 dark:text-white'>Today's Schedule</h3>
-
-          <TaskTable schedule={response} />
         </div>
-      )}
-    </div>
-  );
-}
 
-type TodoProps = Pick<Task, 'id' | 'isDone' | 'description' | 'time'>;
-
-function Todo({ id, isDone, description, time }: TodoProps) {
-  const handleCheckboxChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await updateTask({
-      id,
-      isDone: e.currentTarget.checked,
-    });
-  };
-
-  const handleTimeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await updateTask({
-      id,
-      time: e.currentTarget.value,
-    });
-  };
-
-  const handleDeleteClick = async () => {
-    await deleteTask({ id });
-  };
-
-  return (
-    <div className='flex items-center justify-between bg-purple-50 rounded-lg border border-gray-200 p-2 w-full'>
-      <div className='flex items-center justify-between gap-5 w-full'>
-        <div className='flex items-center gap-3'>
-          <input
-            type='checkbox'
-            className='ml-1 form-checkbox bg-purple-300 checked:bg-purple-300 rounded border-purple-400 duration-200 ease-in-out hover:bg-purple-400 hover:checked:bg-purple-600 focus:ring focus:ring-purple-300 focus:checked:bg-purple-400 focus:ring-opacity-50 text-black'
-            checked={isDone}
-            onChange={handleCheckboxChange}
-          />
-          <span
-            className={cn('text-slate-600', {
-              'line-through text-slate-500': isDone,
-            })}
-          >
-            {description}
-          </span>
+        {/* Property Details */}
+        <div className='grid grid-cols-2 gap-3 mb-4'>
+          <div className='flex items-center text-gray-600 dark:text-gray-400 text-sm 
+                         group-hover:text-primary transition-colors duration-300'>
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            {property.surface}m²
+          </div>
+          <div className='flex items-center text-gray-600 dark:text-gray-400 text-sm 
+                         group-hover:text-primary transition-colors duration-300'>
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            {property.bedrooms} chambres
+          </div>
         </div>
-        <div className='flex items-center gap-2'>
-          <input
-            id='time'
-            type='number'
-            min={0.5}
-            step={0.5}
-            className={cn(
-              'w-18 h-8 text-center text-slate-600 text-xs rounded border border-gray-200 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-purple-300 focus:ring-opacity-50',
-              {
-                'pointer-events-none opacity-50': isDone,
-              }
-            )}
-            value={time}
-            onChange={handleTimeChange}
-          />
-          <span
-            className={cn('italic text-slate-600 text-xs', {
-              'text-slate-500': isDone,
-            })}
-          >
-            hrs
-          </span>
+
+        {/* Features Tags */}
+        <div className='flex flex-wrap gap-1.5'>
+          {property.features.map((feature, index) => (
+            <span 
+              key={index}
+              className='bg-gray-100 dark:bg-boxdark-2 text-gray-600 dark:text-gray-400 
+                         text-xs px-2.5 py-1 rounded-full transform transition-all duration-300
+                         hover:scale-105 hover:bg-primary hover:text-white'
+            >
+              {feature}
+            </span>
+          ))}
         </div>
       </div>
-      <div className='flex items-center justify-end w-15'>
-        <button className='p-1' onClick={handleDeleteClick} title='Remove task'>
-          <TiDelete size='20' className='text-red-600 hover:text-red-700' />
-        </button>
-      </div>
     </div>
-  );
-}
-
-function TaskTable({ schedule }: { schedule: GeneratedSchedule }) {
-  return (
-    <div className='flex flex-col gap-6 py-6'>
-      <table className='table-auto w-full border-separate border border-spacing-2 rounded-md border-slate-200 shadow-sm'>
-        {!!schedule.mainTasks ? (
-          schedule.mainTasks
-            .map((mainTask) => <MainTaskTable key={mainTask.name} mainTask={mainTask} subtasks={schedule.subtasks} />)
-            .sort((a, b) => {
-              const priorityOrder = ['low', 'medium', 'high'];
-              if (a.props.mainTask.priority && b.props.mainTask.priority) {
-                return (
-                  priorityOrder.indexOf(b.props.mainTask.priority) - priorityOrder.indexOf(a.props.mainTask.priority)
-                );
-              } else {
-                return 0;
-              }
-            })
-        ) : (
-          <div className='text-slate-600 text-center'>OpenAI didn't return any Main Tasks. Try again.</div>
-        )}
-      </table>
-
-      {/* ))} */}
-    </div>
-  );
-}
-
-function MainTaskTable({ mainTask, subtasks }: { mainTask: MainTask; subtasks: SubTask[] }) {
-  return (
-    <>
-      <thead>
-        <tr>
-          <th
-            className={cn(
-              'flex items-center justify-between gap-5 py-4 px-3 text-slate-800 border rounded-md border-slate-200 bg-opacity-70',
-              {
-                'bg-red-100': mainTask.priority === 'high',
-                'bg-green-100': mainTask.priority === 'low',
-                'bg-yellow-100': mainTask.priority === 'medium',
-              }
-            )}
-          >
-            <span>{mainTask.name}</span>
-            <span className='opacity-70 text-xs font-medium italic'> {mainTask.priority} priority</span>
-          </th>
-        </tr>
-      </thead>
-      {!!subtasks ? (
-        subtasks.map((subtask) => {
-          if (subtask.mainTaskName === mainTask.name) {
-            return (
-              <tbody key={subtask.description}>
-                <tr>
-                  <td
-                    className={cn(
-                      'flex items-center justify-between gap-4 py-2 px-3 text-slate-600 border rounded-md border-purple-100 bg-opacity-60',
-                      {
-                        'bg-red-50': mainTask.priority === 'high',
-                        'bg-green-50': mainTask.priority === 'low',
-                        'bg-yellow-50': mainTask.priority === 'medium',
-                      }
-                    )}
-                  >
-                    <SubtaskTable description={subtask.description} time={subtask.time} />
-                  </td>
-                </tr>
-              </tbody>
-            );
-          }
-        })
-      ) : (
-        <div className='text-slate-600 text-center'>OpenAI didn't return any Subtasks. Try again.</div>
-      )}
-    </>
-  );
-}
-
-function SubtaskTable({ description, time }: { description: string; time: number }) {
-  const [isDone, setIsDone] = useState<boolean>(false);
-
-  const convertHrsToMinutes = (time: number) => {
-    if (time === 0) return 0;
-    const hours = Math.floor(time);
-    const minutes = Math.round((time - hours) * 60);
-    return `${hours > 0 ? hours + 'hr' : ''} ${minutes > 0 ? minutes + 'min' : ''}`;
-  };
-
-  const minutes = useMemo(() => convertHrsToMinutes(time), [time]);
-
-  return (
-    <>
-      <input
-        type='checkbox'
-        className='ml-1 form-checkbox bg-purple-500 checked:bg-purple-300 rounded border-purple-600 duration-200 ease-in-out hover:bg-purple-600 hover:checked:bg-purple-600 focus:ring focus:ring-purple-300 focus:checked:bg-purple-400 focus:ring-opacity-50'
-        checked={isDone}
-        onChange={(e) => setIsDone(e.currentTarget.checked)}
-      />
-      <span
-        className={cn('leading-tight justify-self-start w-full text-slate-600', {
-          'line-through text-slate-500 opacity-50': isDone,
-        })}
-      >
-        {description}
-      </span>
-      <span
-        className={cn('text-slate-600 text-right', {
-          'line-through text-slate-500 opacity-50': isDone,
-        })}
-      >
-        {minutes}
-      </span>
-    </>
   );
 }
