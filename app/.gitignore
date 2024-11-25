@@ -1,0 +1,46 @@
+.wasp/
+node_modules/
+
+# Ignore all dotenv files by default to prevent accidentally committing any secrets.
+# To include specific dotenv files, use the `!` operator or adjust these rules.
+.env
+.env.*
+
+# Don't ignore example dotenv files.
+!.env.example
+!.env.*.example
+
+# Large files
+sc/chrome-win64/chrome-win64/chrome.dll
+sc/google-chrome-stable_current_amd64.deb
+
+# Chrome/Selenium related
+sc/
+*.deb
+*.dll
+chrome-win*/
+chromedriver*
+*.exe
+*.zip
+*.tar.gz
+*.tgz
+
+# Large binary files
+*.bin
+*.iso
+*.dmg
+*.pkg
+*.msi
+*.msix
+*.jar
+*.war
+*.ear
+*.sar
+*.rar
+*.tar
+*.gz
+*.7z
+
+# Any file larger than 100MB
+# Note: This is a comment, Git doesn't actually support this syntax
+# You'll need to manually identify and add large files

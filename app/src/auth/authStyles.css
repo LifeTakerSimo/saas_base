@@ -1,0 +1,107 @@
+/* Custom styles for Wasp auth forms */
+.auth-form {
+  @apply space-y-4 text-white;
+}
+
+.auth-form label {
+  @apply block text-sm font-medium text-white mb-1;
+}
+
+.auth-form input {
+  @apply w-full bg-gray-800/50 border-gray-700 rounded-lg px-4 py-2 text-white
+  focus:border-purple-500 focus:ring-purple-500/20 
+  placeholder-gray-500 transition-all duration-300;
+}
+
+.auth-form button[type="submit"] {
+  @apply w-full bg-gradient-to-r from-purple-600 to-blue-500 
+  hover:from-purple-700 hover:to-blue-600 text-white font-medium 
+  py-2.5 rounded-lg transition-all duration-300 transform 
+  hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 
+  active:scale-95 mt-6;
+}
+
+.auth-form .error-message {
+  @apply text-red-500 text-sm mt-2;
+}
+
+/* Additional form elements */
+.auth-form select {
+  @apply w-full bg-gray-800/50 border-gray-700 rounded-lg px-4 py-2 text-white
+  focus:border-purple-500 focus:ring-purple-500/20 
+  placeholder-gray-500 transition-all duration-300;
+}
+
+.auth-form textarea {
+  @apply w-full bg-gray-800/50 border-gray-700 rounded-lg px-4 py-2 text-white
+  focus:border-purple-500 focus:ring-purple-500/20 
+  placeholder-gray-500 transition-all duration-300;
+}
+
+.auth-form .checkbox-label {
+  @apply flex items-center space-x-2 text-gray-300;
+}
+
+.auth-form .checkbox-input {
+  @apply h-4 w-4 text-purple-500 border-gray-700 rounded 
+  focus:ring-purple-500/20 focus:ring-offset-0 
+  bg-gray-800/50 transition-all duration-300;
+}
+
+/* Form section titles */
+.auth-form .section-title {
+  @apply text-lg font-semibold text-white mb-4;
+}
+
+/* Form groups */
+.auth-form .form-group {
+  @apply space-y-2;
+}
+
+/* Helper text */
+.auth-form .helper-text {
+  @apply text-sm text-gray-400 mt-1;
+}
+
+/* Success messages */
+.auth-form .success-message {
+  @apply text-green-500 text-sm mt-2;
+}
+
+/* Add specific styles for any text elements inside the form */
+.auth-form p,
+.auth-form span,
+.auth-form div {
+  @apply text-white;
+}
+
+/* Style for links inside the form */
+.auth-form a {
+  @apply text-purple-500 hover:text-purple-400 transition-colors;
+}
+
+/* Form headings */
+.auth-form h1,
+.auth-form h2,
+.auth-form h3,
+.auth-form h4 {
+  @apply text-white;
+}
+
+/* Form button text */
+.auth-form button {
+  @apply text-white;
+}
+
+/* Additional form elements */
+.auth-form select,
+.auth-form textarea {
+  @apply text-white;
+}
+
+/* Add this to your existing authStyles.css */
+.auth-form h2,
+.auth-container h2 {
+  @apply text-white text-3xl font-bold !important;
+  margin-top: 1.5rem !important;
+} 

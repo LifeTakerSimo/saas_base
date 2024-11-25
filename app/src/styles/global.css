@@ -1,0 +1,327 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 271 91% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 271 91% 65%;
+
+    --radius: 0.5rem;
+  }
+
+  /* Auth form specific styles */
+  .cl-formButtonPrimary {
+    @apply bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600;
+  }
+
+  /* Form inputs and backgrounds */
+  input,
+  textarea,
+  select,
+  .cl-formButtonPrimary,
+  .cl-form input,
+  .cl-internal-b3fm6y {
+    @apply bg-black text-white border-gray-700 !important;
+  }
+
+  /* Specific input field styling */
+  .cl-formField,
+  .cl-form .cl-formField,
+  .cl-internal-form-input {
+    background-color: black !important;
+    color: white !important;
+  }
+
+  /* Input container backgrounds */
+  .cl-form .cl-formFieldInput,
+  .cl-formFieldInput__wrapper {
+    background-color: black !important;
+  }
+
+  /* Form labels */
+  label,
+  .cl-form label,
+  .cl-formFieldLabel,
+  .cl-internal-b3fm6y label,
+  .cl-internal-form-label {
+    @apply text-white !important;
+  }
+
+  /* Form text elements */
+  .cl-form span, 
+  .cl-form p,
+  .cl-formField,
+  .cl-socialButtonsBlockButton span,
+  .cl-dividerText,
+  .cl-footerActionLink {
+    @apply text-white !important;
+  }
+
+  /* Placeholder text */
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-500 !important;
+  }
+
+  /* Form container background */
+  .cl-card,
+  .cl-formContainer {
+    @apply bg-black/50 backdrop-blur-sm !important;
+  }
+
+  /* Override any light backgrounds */
+  .bg-white,
+  .dark\:bg-white {
+    @apply bg-black !important;
+  }
+
+  /* Social auth and divider text */
+  .social-auth-label,
+  .continue-with-text {
+    @apply text-white !important;
+  }
+
+  /* Form error messages */
+  .form-error {
+    @apply text-red-500 !important;
+  }
+}
+
+@layer components {
+  /* Style all form inputs */
+  .cl-form input,
+  .cl-formField,
+  .cl-internal-b3fm6y,
+  input[type="email"],
+  input[type="password"],
+  input[type="text"] {
+    background-color: black !important;
+    color: white !important;
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+  }
+
+  /* Style input focus states */
+  .cl-form input:focus,
+  .cl-formField:focus,
+  .cl-internal-b3fm6y:focus {
+    background-color: black !important;
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+  }
+
+  /* Style placeholders */
+  .cl-form input::placeholder,
+  .cl-formField::placeholder,
+  .cl-internal-b3fm6y::placeholder {
+    color: rgb(107 114 128) !important; /* gray-500 */
+  }
+
+  /* Style the "Or continue with" text */
+  .cl-dividerText,
+  .cl-footerActionText,
+  span[class*="OrContinueWithText"] {
+    color: white !important;
+    background-color: transparent !important;
+  }
+
+  /* Ensure form labels are white */
+  .cl-formLabel,
+  .cl-form label {
+    color: white !important;
+  }
+
+  /* Social auth label styling */
+  div[class*="SocialAuthLabel"],
+  .social-auth-label {
+    color: white !important;
+  }
+
+  /* Remove Or continue with section completely */
+  div[class*="OrContinueWith"],
+  div[class*="OrContinueWithLineContainer"],
+  div[class*="OrContinueWithLine"],
+  div[class*="OrContinueWithTextContainer"],
+  span[class*="OrContinueWithText"] {
+    display: none !important;
+  }
+
+  /* Adjust social auth section spacing */
+  div[class*="SocialAuth"] {
+    @apply mt-6 border-t border-gray-800 pt-6;
+  }
+
+  div[class*="SocialAuthLabel"] {
+    @apply text-sm font-medium text-gray-400;
+  }
+
+  div[class*="SocialAuthButtons"] {
+    @apply mt-2 flex gap-4;
+  }
+
+  /* Social buttons */
+  button[class*="SocialButton"] {
+    @apply flex-1 bg-black/50 text-white border border-gray-800 
+    hover:border-purple-500/50 transition-all duration-300
+    rounded-lg p-2 hover:bg-black/70;
+  }
+
+  /* Ensure all auth form text is white */
+  .cl-form span, 
+  .cl-form p,
+  .cl-form a,
+  .cl-footerActionText,
+  .cl-footerAction span,
+  .cl-footerActionLink {
+    @apply text-white !important;
+  }
+
+  /* Style the forgot password link */
+  .cl-footerActionLink,
+  .cl-form a[href*="password"],
+  a[href*="password-reset"] {
+    @apply text-purple-500 hover:text-purple-400 transition-colors !important;
+  }
+
+  /* Ensure all form text elements are white */
+  .cl-formButtonPrimary,
+  .cl-formField,
+  .cl-internal-form-input,
+  .cl-internal-b3fm6y,
+  .cl-internal-13zxd8,
+  .cl-internal-g5szk9 {
+    @apply text-white !important;
+  }
+
+  /* Card title and content styling */
+  .cl-card-title,
+  .cl-card-text,
+  .cl-headerTitle,
+  .cl-headerSubtitle,
+  .cl-formHeaderTitle,
+  .cl-formHeaderSubtitle,
+  div[class*="cl-internal"] h1,
+  div[class*="cl-internal"] h2,
+  div[class*="cl-internal"] p {
+    @apply text-white !important;
+  }
+
+  /* Ensure all text within the card is white */
+  .cl-card *:not(a):not(button):not(input) {
+    @apply text-white !important;
+  }
+
+  /* Keep links purple */
+  .cl-card a {
+    @apply text-purple-500 hover:text-purple-400 transition-colors !important;
+  }
+
+  /* Keep button text as defined */
+  .cl-card button {
+    @apply text-current !important;
+  }
+
+  /* Form button text colors */
+  .cl-formButtonPrimary,
+  .cl-formButtonPrimary span,
+  .cl-formButtonPrimary div,
+  button[type="submit"],
+  .cl-internal-b3fm6y button,
+  .cl-internal-g5szk9 button {
+    @apply text-white !important;
+  }
+
+  /* Ensure all text within form elements is white */
+  .cl-form *:not(a):not(input):not(select):not(textarea),
+  .cl-internal-b3fm6y *:not(a):not(input):not(select):not(textarea),
+  .cl-internal-g5szk9 *:not(a):not(input):not(select):not(textarea) {
+    @apply text-white !important;
+  }
+
+  /* Style the submit button */
+  .cl-formButtonPrimary {
+    @apply bg-gradient-to-r from-purple-600 to-blue-500 
+    hover:from-purple-700 hover:to-blue-600 
+    text-white font-medium transition-all duration-300 !important;
+  }
+
+  /* Ensure form labels and text are white */
+  .cl-formFieldLabel,
+  .cl-formHeader,
+  .cl-formHeaderTitle,
+  .cl-formHeaderSubtitle,
+  .cl-formFieldInput__label {
+    @apply text-white !important;
+  }
+
+  /* Style the next/back navigation buttons */
+  .cl-footerActionLink,
+  .cl-footerAction button,
+  .cl-formButtonReset {
+    @apply text-white hover:text-purple-400 transition-colors !important;
+  }
+
+  /* Auth form titles and headers */
+  div[class*="cl-card"] h1,
+  div[class*="cl-card"] h2,
+  div[class*="cl-card"] h3,
+  div[class*="cl-card"] p,
+  div[class*="cl-internal"] h1,
+  div[class*="cl-internal"] h2,
+  div[class*="cl-internal"] h3,
+  div[class*="cl-internal"] p,
+  .cl-headerTitle,
+  .cl-headerSubtitle,
+  .cl-formHeaderTitle,
+  .cl-formHeaderSubtitle {
+    @apply text-white !important;
+  }
+
+  /* Specifically target auth form titles */
+  div[class*="cl-card"] [class*="cl-header"] *,
+  div[class*="cl-internal"] [class*="cl-header"] *,
+  .cl-auth-form-title,
+  .cl-auth-form-subtitle {
+    @apply text-white !important;
+  }
+
+  /* Ensure all text within auth forms is white by default */
+  .cl-card *:not(a):not(button):not(input),
+  .cl-internal-b3fm6y *:not(a):not(button):not(input) {
+    @apply text-white !important;
+  }
+}
+
+
+.custom-form {
+  color: #ffffff; /* Change the color of the main heading */
+}
+
+.custom-form h2, .custom-form h1{
+  color: #ffffff; /* Change the color of the main heading */
+}
