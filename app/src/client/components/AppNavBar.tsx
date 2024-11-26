@@ -173,13 +173,14 @@ export default function AppNavBar() {
                 </AnimatePresence>
               </div>
 
-              {/* Recherche text */}
-              <span className="text-gray-300 hover:text-white transition-colors cursor-pointer">
+              {/* Recherche text linked to DemoAppPage */}
+              <Link to="/demo-app" className="text-gray-300 hover:text-white transition-colors cursor-pointer">
                 Recherche
-              </span>
+              </Link>
 
               {/* Nouveau Projet Button */}
-              <button
+              <Link
+                to="/nouveau-projet"
                 className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-500 
                   hover:from-purple-700 hover:to-blue-600 text-white rounded-lg 
                   transition-all duration-300 transform hover:scale-105 
@@ -187,7 +188,7 @@ export default function AppNavBar() {
               >
                 <Plus className="w-4 h-4" />
                 <span>Nouveau Projet</span>
-              </button>
+              </Link>
 
               {/* Analyses Dropdown */}
               <div 
@@ -256,7 +257,7 @@ export default function AppNavBar() {
                   scale: isScrolled ? 0.99 : 1,
                 }}
               >
-                <DropdownUser user={user} />
+                <DropdownUser user={user ?? null} />
               </motion.div>
             </div>
           </div>

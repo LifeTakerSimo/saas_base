@@ -349,3 +349,9 @@ job sendNewsletter {
   entities: [User]
 }
 //#endregion
+
+route NouveauProjetRoute { path: "/nouveau-projet", to: NouveauProjetPage }
+page NouveauProjetPage {
+  authRequired: true,
+  component: import NouveauProjet from "@src/client/pages/NouveauProjet"
+}
