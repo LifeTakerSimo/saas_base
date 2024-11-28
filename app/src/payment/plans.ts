@@ -3,9 +3,9 @@ import { requireNodeEnvVar } from '../server/utils';
 export type SubscriptionStatus = 'past_due' | 'cancel_at_period_end' | 'active' | 'deleted';
 
 export enum PaymentPlanId {
-  Hobby = 'hobby',
-  Pro = 'pro',
-  Credits10 = 'credits10',
+  Free = 'free',
+  Standard = 'standard',
+  Enterprise = 'enterprise'
 }
 
 export interface PaymentPlan {
@@ -13,30 +13,52 @@ export interface PaymentPlan {
   // E.g. this might be price id on Stripe, or variant id on LemonSqueezy.
   getPaymentProcessorPlanId: () => string;
   effect: PaymentPlanEffect;
+  id: PaymentPlanId;
+  name: string;
 }
 
-export type PaymentPlanEffect = { kind: 'subscription' } | { kind: 'credits'; amount: number };
+export type PaymentPlanEffect = 
+  | { kind: 'subscription'; maxProjects: number; priceMAD?: number; durationDays?: number }
+  | { kind: 'credits'; amount: number };
 
 export const paymentPlans: Record<PaymentPlanId, PaymentPlan> = {
-  [PaymentPlanId.Hobby]: {
-    getPaymentProcessorPlanId: () => requireNodeEnvVar('PAYMENTS_HOBBY_SUBSCRIPTION_PLAN_ID'),
-    effect: { kind: 'subscription' },
+  [PaymentPlanId.Free]: {
+    id: PaymentPlanId.Free,
+    name: 'Essai Gratuit',
+    effect: {
+      kind: 'subscription',
+      maxProjects: 3,
+      durationDays: 15
+    },
+    getPaymentProcessorPlanId: () => 'free_trial'
   },
-  [PaymentPlanId.Pro]: {
-    getPaymentProcessorPlanId: () => requireNodeEnvVar('PAYMENTS_PRO_SUBSCRIPTION_PLAN_ID'),
-    effect: { kind: 'subscription' },
+  [PaymentPlanId.Standard]: {
+    id: PaymentPlanId.Standard,
+    name: 'Standard',
+    effect: {
+      kind: 'subscription',
+      maxProjects: 10,
+      priceMAD: 100
+    },
+    getPaymentProcessorPlanId: () => 'price_standard'
   },
-  [PaymentPlanId.Credits10]: {
-    getPaymentProcessorPlanId: () => requireNodeEnvVar('PAYMENTS_CREDITS_10_PLAN_ID'),
-    effect: { kind: 'credits', amount: 10 },
-  },
+  [PaymentPlanId.Enterprise]: {
+    id: PaymentPlanId.Enterprise,
+    name: 'Entreprise',
+    effect: {
+      kind: 'subscription',
+      maxProjects: -1, // unlimited
+      priceMAD: 200
+    },
+    getPaymentProcessorPlanId: () => 'price_enterprise'
+  }
 };
 
 export function prettyPaymentPlanName(planId: PaymentPlanId): string {
   const planToName: Record<PaymentPlanId, string> = {
-    [PaymentPlanId.Hobby]: 'Hobby',
-    [PaymentPlanId.Pro]: 'Pro',
-    [PaymentPlanId.Credits10]: '10 Credits',
+    [PaymentPlanId.Free]: 'Free Trial',
+    [PaymentPlanId.Standard]: 'Standard',
+    [PaymentPlanId.Enterprise]: 'Enterprise',
   };
   return planToName[planId];
 }

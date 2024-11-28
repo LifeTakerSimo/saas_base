@@ -52,6 +52,9 @@ function generateMockUserData(): MockUserData {
     phoneNumber: null,
     company: null,
     website: null,
-    address: null
+    address: null,
+    trialStartDate: null,
+    trialEndDate: null,
+    hasBankAccount: false
   };
 }

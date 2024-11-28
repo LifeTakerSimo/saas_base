@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { User } from 'wasp/entities';
-import { type SubscriptionStatus, prettyPaymentPlanName, parsePaymentPlanId } from '../payment/plans';
+import { type SubscriptionStatus, prettyPaymentPlanName, parsePaymentPlanId, PaymentPlanId } from '../payment/plans';
 import { getCustomerPortalUrl, useQuery, updateCurrentUser } from 'wasp/client/operations';
 import { Link } from 'wasp/client/router';
 import { logout } from 'wasp/client/auth';
@@ -79,7 +79,6 @@ export default function AccountPage({ user }: { user: User }) {
                   subscriptionStatus={user.subscriptionStatus as SubscriptionStatus}
                   subscriptionPlan={user.subscriptionPlan}
                   datePaid={user.datePaid}
-                  credits={user.credits}
                 />
               </dd>
             </div>
@@ -125,29 +124,33 @@ type UserCurrentPaymentPlanProps = {
   subscriptionPlan: string | null;
   subscriptionStatus: SubscriptionStatus | null;
   datePaid: Date | null;
-  credits: number;
 };
 
-function UserCurrentPaymentPlan({ subscriptionPlan, subscriptionStatus, datePaid, credits }: UserCurrentPaymentPlanProps) {
-  if (subscriptionStatus && subscriptionPlan && datePaid) {
+function UserCurrentPaymentPlan({ subscriptionPlan, subscriptionStatus, datePaid }: UserCurrentPaymentPlanProps) {
+  if (!subscriptionPlan || !subscriptionStatus) {
     return (
-      <>
-        <dd className='mt-1 text-sm text-gray-900 dark:text-gray-400 sm:col-span-1 sm:mt-0'>{getUserSubscriptionStatusDescription({ subscriptionPlan, subscriptionStatus, datePaid })}</dd>
-        {subscriptionStatus !== 'deleted' ? <CustomerPortalButton /> : <BuyMoreButton />}
-      </>
+      <div className="flex items-center justify-between">
+        <span className="text-gray-300">Plan Gratuit</span>
+        <BuyMoreButton />
+      </div>
     );
   }
 
   return (
-    <>
-      <dd className='mt-1 text-sm text-gray-900 dark:text-gray-400 sm:col-span-1 sm:mt-0'>Credits remaining: {credits}</dd>
-      <BuyMoreButton />
-    </>
+    <div className="flex items-center justify-between">
+      <span className="text-gray-300">
+        {getUserSubscriptionStatusDescription({ subscriptionPlan, subscriptionStatus, datePaid })}
+      </span>
+      <div className="flex gap-2">
+        {subscriptionStatus !== 'deleted' ? <CustomerPortalButton /> : <BuyMoreButton />}
+      </div>
+    </div>
   );
 }
 
 function getUserSubscriptionStatusDescription({ subscriptionPlan, subscriptionStatus, datePaid }: { subscriptionPlan: string; subscriptionStatus: SubscriptionStatus; datePaid: Date }) {
-  const planName = prettyPaymentPlanName(parsePaymentPlanId(subscriptionPlan));
+  const planId = subscriptionPlan as PaymentPlanId;
+  const planName = prettyPaymentPlanName(planId);
   const endOfBillingPeriod = prettyPrintEndOfBillingPeriod(datePaid);
   return prettyPrintStatus(planName, subscriptionStatus, endOfBillingPeriod);
 }
@@ -174,34 +177,29 @@ function prettyPrintEndOfBillingPeriod(date: Date) {
 
 function BuyMoreButton() {
   return (
-    <div className='ml-4 flex-shrink-0 sm:col-span-1 sm:mt-0'>
-      <Link to='/pricing' className='font-medium text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500'>
-        Buy More/Upgrade
-      </Link>
-    </div>
+    <Link 
+      to='/pricing' 
+      className='px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300
+                bg-gradient-to-r from-indigo-600 to-purple-500 hover:from-indigo-700 hover:to-purple-600 
+                text-white hover:shadow-lg hover:shadow-indigo-500/25'
+    >
+      Voir les offres
+    </Link>
   );
 }
 
 function CustomerPortalButton() {
-  const { data: customerPortalUrl, isLoading: isCustomerPortalUrlLoading, error: customerPortalUrlError } = useQuery(getCustomerPortalUrl);
-
-  const handleClick = () => {
-    if (customerPortalUrlError) {
-      console.error('Error fetching customer portal url');
-    }
-
-    if (customerPortalUrl) {
-      window.open(customerPortalUrl, '_blank');
-    } else {
-      console.error('Customer portal URL is not available');
-    }
-  };
+  const { data: customerPortalUrl, isLoading, error } = useQuery(getCustomerPortalUrl);
 
   return (
-    <div className='ml-4 flex-shrink-0 sm:col-span-1 sm:mt-0'>
-      <button onClick={handleClick} disabled={isCustomerPortalUrlLoading} className='font-medium text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300'>
-        Manage Subscription
-      </button>
-    </div>
+    <button 
+      onClick={() => customerPortalUrl && window.open(customerPortalUrl, '_blank')}
+      disabled={isLoading}
+      className='px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300
+                bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 
+                text-white hover:shadow-lg hover:shadow-purple-500/25 disabled:opacity-50'
+    >
+      Gérer l'abonnement
+    </button>
   );
 }

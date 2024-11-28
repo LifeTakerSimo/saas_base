@@ -1,5 +1,4 @@
 import {
-  features,
   navigation,
   faqs,
   footerNavigation,
@@ -19,13 +18,59 @@ import { Card, CardDescription, CardHeader, CardTitle } from "./components/ui/ca
 import LoanSimulator from './components/LoanSimulator'
 import RentRevenueSimulator from './components/RentRevenueSimulator'
 import AffordabilitySimulator from './components/AffordabilitySimulator'
-import { Home, TrendingUp, Calculator, Brain, Coins, Sliders, FileText, ShieldAlert, MessageSquare, Mail, Apple, Crown, Check } from 'lucide-react'
+import { Home, TrendingUp, Calculator, Mail, Apple, Crown, Check, Users, Briefcase, ChartBar } from 'lucide-react'
 import { LanguageSelector } from './components/LanguageSelector'
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "./components/ui/table"
 import { Input } from "./components/ui/input"
 import { cn } from "../client/cn";
 import { VortexDemo } from "./components/ui/vortexDemo";
 import { EnhancedInput } from "../components/ui/enhanced-input";
+import { motion } from 'framer-motion';
+
+const features = [
+  {
+    title: "Analyse Immobilière Avancée",
+    description: "Évaluez la rentabilité de vos investissements avec des analyses détaillées du marché et des prévisions de prix",
+    icon: Home,
+    gradient: "from-violet-500 to-purple-500",
+    highlights: ["Analyse par région", "Prévisions sur 10 ans", "Données en temps réel"]
+  },
+  {
+    title: "Simulateur de Prêt Intelligent",
+    description: "Calculez vos mensualités et optimisez votre financement avec notre simulateur de prêt immobilier avancé",
+    icon: Calculator,
+    gradient: "from-blue-500 to-indigo-500",
+    highlights: ["Taux personnalisés", "Amortissement détaillé", "Comparaison de prêts"]
+  },
+  {
+    title: "Analyse Démographique",
+    description: "Accédez aux données démographiques détaillées par région pour cibler les meilleurs investissements",
+    icon: Users,
+    gradient: "from-emerald-500 to-teal-500",
+    highlights: ["Données par région", "Évolution population", "Tendances locales"]
+  },
+  {
+    title: "Rentabilité Locative",
+    description: "Comparez la rentabilité entre location courte et longue durée avec des estimations précises",
+    icon: TrendingUp,
+    gradient: "from-pink-500 to-rose-500",
+    highlights: ["Location saisonnière", "Location longue durée", "Taux d'occupation"]
+  },
+  {
+    title: "Gestion de Portefeuille",
+    description: "Suivez et optimisez votre portefeuille immobilier avec des tableaux de bord personnalisés",
+    icon: Briefcase,
+    gradient: "from-amber-500 to-orange-500",
+    highlights: ["Suivi des performances", "Alertes marché", "Export de rapports"]
+  },
+  {
+    title: "Analyse de Marché",
+    description: "Accédez aux tendances du marché immobilier marocain avec des données actualisées",
+    icon: ChartBar,
+    gradient: "from-cyan-500 to-blue-500",
+    highlights: ["Prix au m²", "Évolution des prix", "Zones en croissance"]
+  }
+];
 
 export default function LandingPage() {
   const [accountType, setAccountType] = useState<string>('email')
@@ -118,55 +163,21 @@ export default function LandingPage() {
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 mb-4 animate-shimmer">
-                Powerful Features
+                Fonctionnalités Puissantes
               </h2>
               <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                Everything you need to make informed financial decisions with confidence
+                Tout ce dont vous avez besoin pour prendre des décisions d'investissement éclairées
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-              {[
-                {
-                  title: "Advanced Loan Calculator",
-                  description: "Calculate monthly payments, interest rates, and amortization schedules with precision",
-                  icon: Calculator,
-                  gradient: "from-violet-500 to-fuchsia-500"
-                },
-                {
-                  title: "Real Estate Analysis",
-                  description: "Evaluate property investments with comprehensive revenue and expense projections",
-                  icon: Home,
-                  gradient: "from-blue-500 to-indigo-500"
-                },
-                {
-                  title: "Affordability Insights",
-                  description: "Understand exactly how much home you can afford based on your financial profile",
-                  icon: Brain,
-                  gradient: "from-pink-500 to-rose-500"
-                },
-                {
-                  title: "Investment Tracking",
-                  description: "Monitor your real estate portfolio performance with detailed analytics",
-                  icon: TrendingUp,
-                  gradient: "from-emerald-500 to-teal-500"
-                },
-                {
-                  title: "Smart Recommendations",
-                  description: "Get personalized suggestions based on your financial goals and market conditions",
-                  icon: Sliders,
-                  gradient: "from-amber-500 to-orange-500"
-                },
-                {
-                  title: "Secure Data",
-                  description: "Your financial information is protected with enterprise-grade security",
-                  icon: ShieldAlert,
-                  gradient: "from-cyan-500 to-blue-500"
-                }
-              ].map((feature, i) => (
-                <div
+              {features.map((feature, i) => (
+                <motion.div
                   key={i}
-                  className="group relative p-8 bg-black border-2 border-gray-800/50 rounded-xl 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="group relative p-8 bg-black/50 border-2 border-gray-800/50 rounded-xl 
                     hover:border-purple-500/50 transition-all duration-500 
                     hover:transform hover:scale-[1.02] hover:-translate-y-1
                     before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r 
@@ -190,11 +201,19 @@ export default function LandingPage() {
                     >
                       {feature.title}
                     </h3>
-                    <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+                    <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300 mb-4">
                       {feature.description}
                     </p>
+                    <div className="space-y-2">
+                      {feature.highlights.map((highlight, index) => (
+                        <div key={index} className="flex items-center text-sm text-gray-500 group-hover:text-gray-400">
+                          <div className={`w-1.5 h-1.5 rounded-full mr-2 bg-gradient-to-r ${feature.gradient}`} />
+                          {highlight}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -215,18 +234,18 @@ export default function LandingPage() {
               {/* Basic Plan */}
               <div className="relative p-8 bg-black/50 border-2 border-gray-800 rounded-xl hover:border-purple-500/50 transition-all duration-500">
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-bold text-white">Basic</h3>
+                  <h3 className="text-2xl font-bold text-white">Découverte</h3>
                   <div className="flex items-baseline">
-                    <span className="text-5xl font-bold text-white">$9</span>
-                    <span className="ml-2 text-gray-400">/month</span>
+                    <span className="text-5xl font-bold text-white">Gratuit</span>
                   </div>
                   <ul className="space-y-4">
                     {[
-                      "Basic loan simulation",
-                      "3 scenarios per month",
-                      "Email support",
-                      "Basic analytics",
-                      "Single user"
+                      "3 projets immobiliers",
+                      "Analyse de base des investissements",
+                      "Calcul des mensualités",
+                      "Estimation du rendement locatif",
+                      "Accès aux données de base du marché",
+                      "Export CSV"
                     ].map((feature, i) => (
                       <li key={i} className="flex items-center text-gray-300">
                         <Check className="h-5 w-5 text-green-500 mr-3" />
@@ -234,8 +253,8 @@ export default function LandingPage() {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full bg-gray-800 text-gray-300 hover:bg-gray-700">
-                    Get Started
+                  <Button className="w-full bg-gray-800 hover:bg-gray-700 text-white">
+                    Commencer Gratuitement
                   </Button>
                 </div>
               </div>
@@ -245,24 +264,26 @@ export default function LandingPage() {
                 <div className="absolute -top-5 left-0 right-0 flex justify-center">
                   <div className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                     <Crown className="h-4 w-4" />
-                    Popular
+                    Recommandé
                   </div>
                 </div>
                 <div className="space-y-6">
                   <h3 className="text-2xl font-bold text-white">Pro</h3>
                   <div className="flex items-baseline">
-                    <span className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">$29</span>
-                    <span className="ml-2 text-gray-400">/month</span>
+                    <span className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">29€</span>
+                    <span className="ml-2 text-gray-400">/mois</span>
                   </div>
                   <ul className="space-y-4">
                     {[
-                      "Advanced loan simulation",
-                      "Unlimited scenarios",
-                      "Priority support",
-                      "Advanced analytics",
-                      "Team collaboration",
-                      "API access",
-                      "Custom reports"
+                      "Projets illimités",
+                      "Analyse détaillée des investissements",
+                      "Simulation avancée de prêts",
+                      "Analyse démographique par région",
+                      "Tendances du marché en temps réel",
+                      "Prévisions de prix sur 10 ans",
+                      "Comparaison location courte/longue durée",
+                      "Export multi-formats (CSV, PDF, API)",
+                      "Support prioritaire"
                     ].map((feature, i) => (
                       <li key={i} className="flex items-center text-gray-300">
                         <Check className="h-5 w-5 text-green-500 mr-3" />
@@ -271,7 +292,7 @@ export default function LandingPage() {
                     ))}
                   </ul>
                   <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white">
-                    Get Started
+                    Commencer l'essai Pro
                   </Button>
                 </div>
               </div>
@@ -279,20 +300,22 @@ export default function LandingPage() {
               {/* Enterprise Plan */}
               <div className="relative p-8 bg-black/50 border-2 border-gray-800 rounded-xl hover:border-purple-500/50 transition-all duration-500">
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-bold text-white">Enterprise</h3>
+                  <h3 className="text-2xl font-bold text-white">Entreprise</h3>
                   <div className="flex items-baseline">
-                    <span className="text-5xl font-bold text-white">$99</span>
-                    <span className="ml-2 text-gray-400">/month</span>
+                    <span className="text-5xl font-bold text-white">99€</span>
+                    <span className="ml-2 text-gray-400">/mois</span>
                   </div>
                   <ul className="space-y-4">
                     {[
-                      "Everything in Pro",
-                      "24/7 Phone & Email support",
-                      "Custom features",
-                      "On-premise deployment",
-                      "Dedicated account manager",
-                      "SLA guarantees",
-                      "Custom integrations"
+                      "Tout le plan Pro",
+                      "Accès multi-utilisateurs",
+                      "API personnalisée",
+                      "Données de marché personnalisées",
+                      "Intégration CRM",
+                      "Formation dédiée",
+                      "Support dédié 24/7",
+                      "SLA garanti",
+                      "Déploiement sur site possible"
                     ].map((feature, i) => (
                       <li key={i} className="flex items-center text-gray-300">
                         <Check className="h-5 w-5 text-green-500 mr-3" />
@@ -300,121 +323,65 @@ export default function LandingPage() {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full bg-gray-800 text-gray-300 hover:bg-gray-700">
-                    Contact Sales
+                  <Button className="w-full bg-gray-800 hover:bg-gray-700 text-white">
+                    Contacter les Ventes
                   </Button>
                 </div>
               </div>
             </div>
 
-            <div className="max-w-7xl mx-auto mt-32 mb-24">
-              <div className="text-center mb-16">
-                <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 mb-4">
-                  Compare Plans
-                </h3>
-                <p className="text-gray-400 text-lg">
-                  Detailed comparison of all features
-                </p>
-              </div>
-
-              <div className="relative overflow-x-auto shadow-md rounded-lg border-2 border-gray-800 mb-12">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-b-2 border-gray-800 bg-black/50">
-                      <TableHead className="w-1/4 py-4 px-6 text-left text-white font-semibold">Features</TableHead>
-                      <TableHead className="w-1/4 py-4 px-6 text-left text-white font-semibold">Basic</TableHead>
-                      <TableHead className="w-1/4 py-4 px-6 text-left text-white font-semibold">Pro</TableHead>
-                      <TableHead className="w-1/4 py-4 px-6 text-left text-white font-semibold">Enterprise</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody className="bg-black/30">
-                    {[
-                      { 
-                        feature: "Loan Simulation", 
-                        basic: "✓", 
-                        pro: "✓", 
-                        enterprise: "✓" 
-                      },
-                      { 
-                        feature: "Scenarios", 
-                        basic: "3/month", 
-                        pro: "Unlimited", 
-                        enterprise: "Unlimited" 
-                      },
-                      { 
-                        feature: "Support", 
-                        basic: "Email", 
-                        pro: "Priority Email", 
-                        enterprise: "24/7 Phone & Email" 
-                      },
-                      { 
-                        feature: "API Access", 
-                        basic: "✗", 
-                        pro: "", 
-                        enterprise: "✓" 
-                      },
-                      { 
-                        feature: "Custom Features", 
-                        basic: "✗", 
-                        pro: "✗", 
-                        enterprise: "✓" 
-                      },
-                      { 
-                        feature: "On-premise Deployment", 
-                        basic: "✗", 
-                        pro: "✗", 
-                        enterprise: "✓" 
-                      },
-                      { 
-                        feature: "Analytics", 
-                        basic: "Basic", 
-                        pro: "Advanced", 
-                        enterprise: "Custom" 
-                      },
-                      { 
-                        feature: "Team Members", 
-                        basic: "1", 
-                        pro: "Up to 10", 
-                        enterprise: "Unlimited" 
-                      },
-                      { 
-                        feature: "Custom Reports", 
-                        basic: "✗", 
-                        pro: "✓", 
-                        enterprise: "✓" 
-                      },
-                      { 
-                        feature: "Data Export", 
-                        basic: "CSV", 
-                        pro: "CSV, PDF, API", 
-                        enterprise: "All Formats" 
-                      }
-                    ].map((row, index) => (
-                      <TableRow 
-                        key={index}
-                        className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
-                      >
-                        <TableCell className="py-4 px-6 text-white font-medium">{row.feature}</TableCell>
-                        <TableCell className="py-4 px-6 text-gray-300">
-                          <span className={row.basic === "✓" ? "text-green-500" : row.basic === "✗" ? "text-red-500" : ""}>
-                            {row.basic}
-                          </span>
-                        </TableCell>
-                        <TableCell className="py-4 px-6 text-gray-300">
-                          <span className={row.pro === "✓" ? "text-green-500" : row.pro === "✗" ? "text-red-500" : ""}>
-                            {row.pro}
-                          </span>
-                        </TableCell>
-                        <TableCell className="py-4 px-6 text-gray-300">
-                          <span className={row.enterprise === "✓" ? "text-green-500" : row.enterprise === "✗" ? "text-red-500" : ""}>
-                            {row.enterprise}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+            <div className="mt-24 overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-800">
+                    <th className="py-4 px-6 text-left text-white">Fonctionnalité</th>
+                    <th className="py-4 px-6 text-center text-white">Découverte</th>
+                    <th className="py-4 px-6 text-center text-white">Pro</th>
+                    <th className="py-4 px-6 text-center text-white">Entreprise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { 
+                      feature: "Projets", 
+                      basic: "3 max", 
+                      pro: "Illimités", 
+                      enterprise: "Illimités" 
+                    },
+                    { 
+                      feature: "Analyse Démographique", 
+                      basic: "Basique", 
+                      pro: "Détaillée", 
+                      enterprise: "Personnalisée" 
+                    },
+                    { 
+                      feature: "Prévisions de Prix", 
+                      basic: "1 an", 
+                      pro: "10 ans", 
+                      enterprise: "Sur mesure" 
+                    },
+                    { 
+                      feature: "Support", 
+                      basic: "Email", 
+                      pro: "Prioritaire", 
+                      enterprise: "24/7 Dédié" 
+                    },
+                    { 
+                      feature: "Export", 
+                      basic: "CSV", 
+                      pro: "CSV, PDF, API", 
+                      enterprise: "Tous formats" 
+                    }
+                  ].map((row, index) => (
+                    <tr key={index} className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors">
+                      <td className="py-4 px-6 text-white font-medium">{row.feature}</td>
+                      <td className="py-4 px-6 text-center text-gray-300">{row.basic}</td>
+                      <td className="py-4 px-6 text-center text-gray-300">{row.pro}</td>
+                      <td className="py-4 px-6 text-center text-gray-300">{row.enterprise}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
@@ -422,20 +389,17 @@ export default function LandingPage() {
         <section className="w-full py-24 bg-gradient-to-b from-black via-gray-900 to-black">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <div className="relative p-8 bg-gradient-to-b from-purple-900/30 via-black/50 to-black/50 border-2 border-purple-500 rounded-xl overflow-hidden">
-                {/* Animated background effect */}
+              <div className="relative p-8 bg-gradient-to-b from-purple-900/20 via-black/50 to-black/50 border-2 border-purple-500/30 rounded-xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 animate-pulse"></div>
                 
-                {/* Content */}
                 <div className="relative z-10 text-center space-y-6">
-                  {/* Special offer badge */}
                   <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-500 rounded-full text-white text-sm font-medium mb-4">
-                    <span className="animate-pulse mr-2">🔥</span> Limited Time Offer
+                    <span className="animate-pulse mr-2">🔥</span> Offre de Lancement
                   </div>
                   
                   <h2 className="text-4xl font-bold">
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-                      Lifetime Access
+                      Accès à Vie
                     </span>
                   </h2>
                   

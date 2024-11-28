@@ -6,6 +6,8 @@ import {
 import { type User } from 'wasp/entities';
 import { HttpError } from 'wasp/server';
 import { type SubscriptionStatus } from '../payment/plans';
+import { Project } from 'wasp/entities';
+import { createProject as createProjectOperation } from 'wasp/server/operations';
 
 export const updateUserById: UpdateUserById<{ id: string; data: Partial<User> }, User> = async (
   { id, data },
@@ -147,4 +149,122 @@ export const getPaginatedUsers: GetPaginatedUsers<GetPaginatedUsersInput, GetPag
     users: queryResults,
     totalPages,
   };
+};
+
+export const createProject = async ({ name, ...data }: { name: string; [key: string]: any }, context: any) => {
+  if (!context.user) {
+    throw new Error('Not authorized');
+  }
+
+  return context.entities.Project.create({
+    data: {
+      ...data,
+      name,
+      userId: context.user.id,
+    },
+  });
+};
+
+export const getUserProjects = async (_args: any, context: any) => {
+  console.log('========= getUserProjects called =========');
+  console.log('Args:', _args);
+  console.log('Context:', {
+    user: context.user,
+    entities: Object.keys(context.entities),
+  });
+  
+  if (!context.user) {
+    console.error('❌ No user in context - throwing auth error');
+    throw new Error('Not authorized');
+  }
+
+  try {
+    console.log('🔍 Attempting to fetch projects for user:', context.user.id);
+    const projects = await context.entities.Project.findMany({
+      where: { userId: context.user.id },
+      orderBy: { createdAt: 'desc' },
+    });
+    
+    console.log('✅ Projects found:', projects);
+    return projects;
+  } catch (error) {
+    console.error('❌ Error fetching projects:', error);
+    throw error;
+  }
+};
+
+export const getProjectById = async (
+  { projectId }: { projectId: string }, 
+  context: { 
+    user?: { id: string },
+    entities: { Project: any }
+  }
+) => {
+  if (!context.user) {
+    throw new Error('Not authorized');
+  }
+
+  const project = await context.entities.Project.findUnique({
+    where: { id: projectId },
+  });
+
+  if (!project || project.userId !== context.user.id) {
+    throw new Error('Project not found or unauthorized');
+  }
+
+  return project;
+};
+
+export const updateProject = async (args: any, context: any) => {
+  const { id, ...projectData } = args;
+  
+  if (!context.user) {
+    throw new HttpError(401);
+  }
+
+  return context.entities.Project.update({
+    where: { 
+      id: id,
+      userId: context.user.id // Ensure user owns the project
+    },
+    data: projectData
+  });
+}
+
+export const deleteProject = async (
+  { id }: { id: string },
+  context: any
+) => {
+  if (!context.user) {
+    throw new HttpError(401);
+  }
+
+  try {
+    return await context.entities.Project.delete({
+      where: { 
+        id,
+        userId: context.user.id // Ensure user owns the project
+      }
+    });
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    throw new Error('Failed to delete project');
+  }
+};
+
+export const activateTrial = async (userId: string, context: any) => {
+  const trialStartDate = new Date();
+  const trialEndDate = new Date(trialStartDate);
+  trialEndDate.setDate(trialEndDate.getDate() + 15);
+
+  return context.entities.User.update({
+    where: { id: userId },
+    data: {
+      hasBankAccount: true,
+      trialStartDate,
+      trialEndDate,
+      subscriptionPlan: 'free',
+      subscriptionStatus: 'active'
+    }
+  });
 };
