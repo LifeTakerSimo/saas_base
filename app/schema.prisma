@@ -34,6 +34,7 @@ model User {
   contactFormMessages       ContactFormMessage[]
   tasks                     Task[]
   files                     File[]
+  projects                  Project[]
 }
 
 model GptResponse {
@@ -117,4 +118,26 @@ model ContactFormMessage {
   content                   String
   isRead                    Boolean         @default(false)
   repliedAt                 DateTime?
+}
+
+model Project {
+  id                  String    @id @default(uuid())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String
+  name                String
+  price               Float
+  city                String
+  surface             Float
+  propertyType        String?
+  condition           String?
+  loanDuration        Int?
+  interestRate        Float?
+  monthlyPayment      Float?
+  estimatedRent       Float?
+  notaryFees          Float?
+  renovationCost      Float?
+  personalContribution Float?
+  rentalYield         Float?
 }

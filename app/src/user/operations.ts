@@ -6,6 +6,8 @@ import {
 import { type User } from 'wasp/entities';
 import { HttpError } from 'wasp/server';
 import { type SubscriptionStatus } from '../payment/plans';
+import { Project } from 'wasp/entities';
+import { createAction, createQuery } from 'wasp/client/operations';
 
 export const updateUserById: UpdateUserById<{ id: string; data: Partial<User> }, User> = async (
   { id, data },
@@ -148,3 +150,44 @@ export const getPaginatedUsers: GetPaginatedUsers<GetPaginatedUsersInput, GetPag
     totalPages,
   };
 };
+
+export const createProject = createAction<{ name: string }, Project>(async ({ name, ...data }, context) => {
+  if (!context.user) {
+    throw new Error('Not authorized');
+  }
+
+  return context.entities.Project.create({
+    data: {
+      ...data,
+      name,
+      userId: context.user.id,
+    },
+  });
+});
+
+export const getUserProjects = createQuery<void, Project[]>(async (_args, context) => {
+  if (!context.user) {
+    throw new Error('Not authorized');
+  }
+
+  return context.entities.Project.findMany({
+    where: { userId: context.user.id },
+    orderBy: { createdAt: 'desc' },
+  });
+});
+
+export const getProjectById = createQuery<{ projectId: string }, Project>(async ({ projectId }, context) => {
+  if (!context.user) {
+    throw new Error('Not authorized');
+  }
+
+  const project = await context.entities.Project.findUnique({
+    where: { id: projectId },
+  });
+
+  if (!project || project.userId !== context.user.id) {
+    throw new Error('Project not found or unauthorized');
+  }
+
+  return project;
+});

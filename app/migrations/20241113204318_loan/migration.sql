@@ -129,6 +129,30 @@ CREATE TABLE "Session" (
     CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Project" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
+    "city" TEXT NOT NULL,
+    "surface" DOUBLE PRECISION NOT NULL,
+    "propertyType" TEXT,
+    "condition" TEXT,
+    "loanDuration" INTEGER,
+    "interestRate" DOUBLE PRECISION,
+    "monthlyPayment" DOUBLE PRECISION,
+    "estimatedRent" DOUBLE PRECISION,
+    "notaryFees" DOUBLE PRECISION,
+    "renovationCost" DOUBLE PRECISION,
+    "personalContribution" DOUBLE PRECISION,
+    "rentalYield" DOUBLE PRECISION,
+
+    CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
@@ -173,3 +197,6 @@ ALTER TABLE "AuthIdentity" ADD CONSTRAINT "AuthIdentity_authId_fkey" FOREIGN KEY
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Auth"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Project" ADD CONSTRAINT "Project_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
