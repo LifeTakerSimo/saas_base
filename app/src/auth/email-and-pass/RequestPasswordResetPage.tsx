@@ -12,11 +12,11 @@ export function RequestPasswordResetPage() {
         <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold tracking-tighter">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
-              Reset Your Password
+              Réinitialiser Votre Mot de Passe
             </span>
           </h1>
           <p className="text-white text-lg">
-            Enter your email to reset your password
+            Entrez votre email pour réinitialiser votre mot de passe
           </p>
         </div>
 
@@ -24,9 +24,9 @@ export function RequestPasswordResetPage() {
           <ForgotPasswordForm appearance={authAppearance} />
           <div className="text-center pt-4 border-t border-gray-800">
             <span className='text-white'>
-              Remember your password? {' '}
+              Vous vous souvenez de votre mot de passe ? {' '}
               <Link to='/login' className='text-purple-500 hover:text-purple-400 transition-colors'>
-                Sign in
+                Se connecter
               </Link>
             </span>
           </div>

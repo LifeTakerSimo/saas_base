@@ -3,13 +3,13 @@ app OpenSaaS {
     version: "^0.15.0"
   },
 
-  title: "My Open SaaS App",
+  title: "ForsaImmo",
 
   head: [
         "<meta property='og:type' content='website' />",
-        "<meta property='og:title' content='My Open SaaS App' />",
-        "<meta property='og:url' content='https://opensaas.sh' />",
-        "<meta property='og:description' content='I made a SaaS App. Buy my stuff.' />",
+        "<meta property='og:title' content='ForsaImmo' />",
+        "<meta property='og:url' content='https://forsaimmo.ma' />",
+        "<meta property='og:description' content='Votre partenaire en investissement immobilier intelligent.' />",
         "<meta property='og:image' content='https://opensaas.sh/public-banner.png' />",
         "<meta name='twitter:image' content='https://opensaas.sh/public-banner.png' />",
         "<meta name='twitter:image:width' content='800' />",
@@ -375,4 +375,9 @@ action updateProject {
 action deleteProject {
   fn: import { deleteProject } from "@src/user/operations",
   entities: [Project]
+}
+
+query getProperties {
+  fn: import { getProperties } from "@src/demo-ai-app/operations",
+  entities: [Property]
 }

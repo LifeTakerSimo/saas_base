@@ -40,7 +40,7 @@ export function Signup() {
             </span>
           </h1>
           <p className="text-white text-lg">
-            Rejoignez-nous et commencez votre aventure dès aujourd'hui
+            Rejoignez-nous et commencez votre aventure dès aujourd'hui. Profitez d'un essai gratuit de 15 jours!
           </p>
         </div>
         <div className="w-full space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-xl border-2 border-gray-800 hover:border-purple-500/50 transition-all duration-500 group custom-form">

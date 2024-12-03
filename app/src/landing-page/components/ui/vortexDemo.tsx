@@ -29,7 +29,7 @@ export const VortexDemo: React.FC<VortexDemoProps> = ({ backgroundColor, rangeY,
           <div className="flex flex-col items-center space-y-6 text-center">
             <div className="space-y-8">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white ">
-                A Loan Simulator
+                Un Simulateur de Prêt
                 <br />
                 <span className="block mt-4">
                 <motion.span
@@ -54,13 +54,13 @@ export const VortexDemo: React.FC<VortexDemoProps> = ({ backgroundColor, rangeY,
                     className
                 )}
                 >
-                    so good it feels like cheating
+                    tellement bon que ça paraît irréel
                 </motion.span>
                 </span>
               </h1>
               <p className="text-lg md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed bg-transparent mt-4">
-                Simulate your loan, rental income, and affordability all in one place.
-                Make informed decisions for your property investment.
+                Simulez votre prêt, vos revenus locatifs et votre capacité d'achat en un seul endroit.
+                Prenez des décisions éclairées pour votre investissement immobilier.
               </p>
               <div className="flex items-center justify-center gap-4 mt-6">
                 <Button 
@@ -69,7 +69,7 @@ export const VortexDemo: React.FC<VortexDemoProps> = ({ backgroundColor, rangeY,
                     transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 active:scale-95 "
                   asChild
                 >
-                  <Link to="#simulate">Start Simulation</Link>
+                  <Link to="#simulate">Commencer la Simulation</Link>
                 </Button>
                 <Button 
                   variant="outline" 
@@ -77,7 +77,7 @@ export const VortexDemo: React.FC<VortexDemoProps> = ({ backgroundColor, rangeY,
                     px-6 py-2.5 text-sm rounded-lg transition-all duration-300"
                   asChild
                 >
-                  <Link to="#features">Learn More</Link>
+                  <Link to="#features">En Savoir Plus</Link>
                 </Button>
               </div>
             </div>

@@ -99,7 +99,7 @@ export default function LandingPage() {
   }, [isHovered]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen font-space-grotesk">
       <Header />
       <main className="flex-1">
         <VortexDemo
@@ -113,14 +113,14 @@ export default function LandingPage() {
             <div className="flex flex-col items-center space-y-8 text-center">
               <div className="space-y-4">
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white">
-                  A Loan Simulator
+                  Un Simulateur Immobilier
                   <span className="block bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-violet-400 to-blue-500">
-                    so good it feels like cheating
+                    qui change la donne
                   </span>
                 </h1>
                 <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                  Simulate your loan, rental income, and affordability all in one place.
-                  Make informed decisions for your property investment.
+                  Simulez vos prêts, revenus locatifs et capacité d'achat en un seul endroit.
+                  Prenez des décisions éclairées pour vos investissements immobiliers.
                 </p>
                 <div className="flex items-center justify-center gap-6 mt-8">
                   <Button 
@@ -129,7 +129,7 @@ export default function LandingPage() {
                       transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 active:scale-95"
                     asChild
                   >
-                    <Link to="#simulate">Start Simulation</Link>
+                    <Link to="#simulate">Commencer la Simulation</Link>
                   </Button>
                   <Button 
                     variant="outline" 
@@ -137,7 +137,7 @@ export default function LandingPage() {
                       px-8 py-4 text-lg rounded-xl transition-all duration-300"
                     asChild
                   >
-                    <Link to="#features">Learn More</Link>
+                    <Link to="#features">En Savoir Plus</Link>
                   </Button>
                 </div>
               </div>
@@ -149,7 +149,7 @@ export default function LandingPage() {
           <div className="max-w-[1400px] w-full mx-auto">
             <div className="flex flex-col items-center space-y-8">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-                Try Our Simulators
+                Essayez Nos Simulateurs
               </h2>
               <div className="grid gap-6 lg:grid-cols-3">
                 <LoanSimulator />
@@ -404,28 +404,28 @@ export default function LandingPage() {
                   </h2>
                   
                   <div className="flex justify-center items-baseline space-x-2">
-                    <span className="text-gray-400 text-lg line-through">€29/month</span>
-                    <span className="text-5xl font-bold text-white">€5</span>
-                    <span className="text-gray-400 text-xl">/lifetime</span>
+                    <span className="text-gray-400 text-lg line-through">29€/mois</span>
+                    <span className="text-5xl font-bold text-white">5€</span>
+                    <span className="text-gray-400 text-xl">/à vie</span>
                   </div>
                   
                   <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-                    Join now and lock in lifetime access to all Pro features for a one-time payment of just €5
+                    Rejoignez-nous maintenant et obtenez un accès à vie à toutes les fonctionnalités Pro pour un paiement unique de 5€
                   </p>
                   
                   {/* Timer */}
                   <div className="text-gray-400 text-sm">
-                    Limited offer - Only for the first 100 users
+                    Offre limitée - Seulement pour les 100 premiers utilisateurs
                   </div>
                   
                   {/* Feature list */}
                   <ul className="text-left space-y-3 max-w-md mx-auto mt-6">
                     {[
-                      "Lifetime access to all Pro features",
-                      "No monthly fees ever",
-                      "Free updates for life",
-                      "Priority support",
-                      "Lock in early adopter benefits"
+                      "Accès à vie à toutes les fonctionnalités Pro",
+                      "Plus jamais de frais mensuels",
+                      "Mises à jour gratuites à vie",
+                      "Support prioritaire",
+                      "Avantages early adopter garantis"
                     ].map((feature, i) => (
                       <li key={i} className="flex items-center text-gray-300">
                         <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
@@ -439,11 +439,11 @@ export default function LandingPage() {
                     <Button 
                       className="bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-medium px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 active:scale-95"
                     >
-                      Get Lifetime Access Now
+                      Obtenir l'Accès à Vie Maintenant
                     </Button>
                     
                     <p className="text-gray-500 text-sm mt-4">
-                      30-day money-back guarantee • Secure payment
+                      Garantie satisfait ou remboursé 30 jours • Paiement sécurisé
                     </p>
                   </div>
                 </div>

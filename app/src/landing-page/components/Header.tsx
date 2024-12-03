@@ -6,7 +6,6 @@ import { useAuth } from 'wasp/client/auth'
 import { Dialog } from '@headlessui/react'
 import { HiBars3 } from 'react-icons/hi2'
 import { AiFillCloseCircle } from 'react-icons/ai'
-import DarkModeSwitcher from '../../client/components/DarkModeSwitcher'
 import DropdownUser from '../../user/DropdownUser'
 import { motion } from 'framer-motion'
 
@@ -27,7 +26,7 @@ export default function Header() {
 
   const Logo = () => (
     <Link className="flex items-center justify-center" to="/">
-      <span className="sr-only">Loan Simulator</span>
+      <span className="sr-only">ForsaImmo</span>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
@@ -44,15 +43,15 @@ export default function Header() {
         <line x1="2" x2="22" y1="10" y2="10" />
       </svg>
       <span className="ml-2 text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
-        LoanSim
+        ForsaImmo
       </span>
     </Link>
   )
 
   const navigation = [
-    { name: 'Features', href: '#features' },
-    { name: 'Simulators', href: '#simulate' },
-    { name: 'Pricing', href: '#pricing' }
+    { name: 'Fonctionnalités', href: '#features' },
+    { name: 'Simulateurs', href: '#simulate' },
+    { name: 'Tarifs', href: '#pricing' }
   ]
 
   return (
@@ -80,8 +79,8 @@ export default function Header() {
 
             {/* Center Section - Navigation (Desktop) */}
             {!isAuthPage && (
-              <div className="hidden lg:flex items-center justify-center flex-1">
-                <div className="flex space-x-12">
+              <div className="hidden lg:flex items-center justify-center flex-1 mx-8">
+                <div className="flex items-center justify-center space-x-12 w-full">
                   {navigation.map((item) => (
                     <a
                       key={item.name}
@@ -100,7 +99,7 @@ export default function Header() {
                       to="/demo-app"
                       className="text-base font-medium text-purple-400 hover:text-purple-300 transition-colors"
                     >
-                      Dashboard
+                      Tableau de bord
                     </Link>
                   )}
                 </div>
@@ -109,7 +108,6 @@ export default function Header() {
 
             {/* Right Section - Auth Buttons/User Menu (Desktop) */}
             <div className="hidden lg:flex items-center space-x-4">
-              <DarkModeSwitcher />
               {!isLoading && !user ? (
                 <div className="flex items-center space-x-4">
                   <Button 
@@ -117,13 +115,13 @@ export default function Header() {
                     className="text-base font-medium text-gray-400 hover:text-white transition-colors"
                     onClick={() => navigate('/login')}
                   >
-                    Login
+                    Se connecter
                   </Button>
                   <Button 
                     className="text-base bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white"
                     onClick={() => navigate('/signup')}
                   >
-                    Create Account
+                    Créer un compte
                   </Button>
                 </div>
               ) : (
@@ -186,12 +184,11 @@ export default function Header() {
                     className="block px-3 py-2.5 text-lg font-medium text-purple-400 hover:text-purple-300"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Dashboard
+                    Tableau de bord
                   </Link>
                 )}
               </div>
               <div className="py-6">
-                <DarkModeSwitcher />
                 {!isLoading && !user ? (
                   <div className="space-y-4 mt-4">
                     <Button 
@@ -202,7 +199,7 @@ export default function Header() {
                         setMobileMenuOpen(false);
                       }}
                     >
-                      Login
+                      Se connecter
                     </Button>
                     <Button 
                       className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white"
@@ -211,7 +208,7 @@ export default function Header() {
                         setMobileMenuOpen(false);
                       }}
                     >
-                      Create Account
+                      Créer un compte
                     </Button>
                   </div>
                 ) : (

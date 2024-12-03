@@ -144,3 +144,167 @@ model Project {
   personalContribution Float?
   rentalYield         Float?
 }
+
+model PropertyType {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model City {
+  id                 Int        @id @default(autoincrement())
+  cityName          String     @unique
+  region            Region     @relation(fields: [regionId], references: [id])
+  regionId          Int
+  avgPricePerSqm    Float?
+  avgRentalYield    Float?
+  population        Int?
+  economicZone      String?
+  unemploymentRate  Float?
+  tourismIndex      Float?
+  economicGrowthRate Float?
+  coastalCity       Boolean    @default(false)
+  crimeRate         Float?
+  numUniversities   Int?
+  airQualityIndex   Float?
+  climateZone       String?
+  
+  // Metadata
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  
+  // Relations
+  properties        Property[] // Relation to Property
+  
+  // Statistics tracking
+  lastUpdated       DateTime?
+  dataSource        String?    // Source of city data
+  dataQualityScore  Float?     // Score for data reliability
+  
+  // Market indicators
+  marketTrend       String?    // "Up", "Down", "Stable"
+  investmentRating  String?    // "A", "B", "C", etc.
+  
+  @@index([cityName])
+  @@index([regionId])
+  @@index([avgPricePerSqm])
+  @@index([avgRentalYield])
+}
+
+model Property {
+  id                String    @id @default(uuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Basic Information
+  title             String
+  description       String
+  price             Float
+  surface           Float
+  status            String    // 'À vendre', 'Vendu', etc.
+  condition         String?   // 'Neuf', 'Bon état', 'À rénover'
+  
+  // Type Relation - Replace string type with relation
+  propertyType      PropertyType @relation(fields: [propertyTypeId], references: [id])
+  propertyTypeId    String
+  
+  // City Relation - Replace string city with relation
+  city              City      @relation(fields: [cityId], references: [id])
+  cityId            Int
+  
+  // Location Details
+  country           String    @default("Maroc")
+  region            Region    @relation(fields: [regionId], references: [id])
+  regionId          Int
+  quartier          String?
+  address           String?
+  postalCode        String?
+  latitude          Float?
+  longitude         Float?
+  distanceToCenter  Float?    // Distance to city center in km
+
+  
+  // Features
+  bedrooms          Int
+  bathrooms         Int
+  features          String[]
+  
+  imageUrl          String
+  images            String[]
+  
+  // Market Analysis
+  pricePerSquareMeter Float   @default(0)
+  neighborhoodPrice   Float?
+  rentalPotential    String?
+  annualPriceChange  Float?
+  priceEvolutionHistory Json?
+  
+  // Rental Analysis
+  suggestedRent      Float?
+  grossYield         Float?   // Rendement Brut
+  cityYield          Float?   // Rendement Ville
+
+  // source
+  link               String?
+  site               String?
+  createdBy          String?
+  modifiedBy         String?
+  modifiedAt         DateTime?  
+
+  // Offre 
+  sell               Boolean   @default(true)
+  longTerm           Boolean   @default(false)
+
+  @@index([cityId])
+  @@index([propertyTypeId])
+  @@index([price])
+  @@index([surface])
+  @@index([status])
+  @@index([regionId])
+}
+
+model Region {
+  id                              Int       @id @default(autoincrement())
+  name                            String    @unique
+  year                            Int
+  tauxActivite                    Decimal?  @db.Decimal(5, 2)  // taux_d_activite
+  populationActiveMille           Int?      // population_active_mille
+  tauxEmploi                      Decimal?  @db.Decimal(5, 2)  // taux_d_emploi
+  populationActiveOccupeeMille    Int?      // population_active_occupee_mille
+  tauxSousEmploi                  Decimal?  @db.Decimal(5, 2)  // taux_sous_emploi
+  populationSousEmploiMille       Int?      // population_sous_emploi_mille
+  chomageMille                    Int?      // chomage_mille
+  tauxChomage                     Decimal?  @db.Decimal(5, 2)  // taux_de_chomage
+  
+  // Metadata
+  createdAt                       DateTime  @default(now())
+  updatedAt                       DateTime  @updatedAt
+  dataSource                      String?
+  lastDataUpdate                  DateTime?
+  
+  // Indexes for common queries
+  @@index([year])
+  @@index([tauxChomage])
+  @@index([tauxActivite])
+  @@index([name])
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+
+  searchQuery String   // The search query or criteria
+  isActive    Boolean  @default(true) // Whether the notification is active
+  frequency   String   // e.g., 'daily', 'weekly', 'monthly'
+  lastSent    DateTime? // When the last notification was sent
+
+  // Metadata
+  emailSent   Boolean  @default(false) // Whether the email has been sent
+}
+

@@ -10,11 +10,11 @@ export function PasswordResetPage() {
         <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold tracking-tighter">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
-              Reset Your Password
+              Réinitialiser Votre Mot de Passe
             </span>
           </h1>
           <p className="text-gray-400 text-lg">
-            Enter your new password below
+            Entrez votre nouveau mot de passe ci-dessous
           </p>
         </div>
 
@@ -22,9 +22,9 @@ export function PasswordResetPage() {
           <ResetPasswordForm appearance={authAppearance} />
           <div className="text-center pt-4 border-t border-gray-800">
             <span className='text-sm text-white'>
-              If everything is okay, {' '}
+              Si tout est en ordre, {' '}
               <Link to='/login' className='text-purple-500 hover:text-purple-400 transition-colors'>
-                go to login
+                retournez à la connexion
               </Link>
             </span>
           </div>

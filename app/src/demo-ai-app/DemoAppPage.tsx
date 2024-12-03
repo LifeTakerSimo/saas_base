@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { SearchInput } from './components/SearchInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SlidersHorizontal, X, Home, Euro, Maximize, BedDouble, Bath, MapPin } from 'lucide-react';
 import { Button } from '../landing-page/components/ui/button';
 import { EnhancedInput } from '../components/ui/enhanced-input';
+import { useQuery } from 'wasp/client/operations';
+import { getProperties } from 'wasp/client/operations';
 
 type Property = {
   id: string;
@@ -16,6 +18,7 @@ type Property = {
   bedrooms: number;
   bathrooms: number;
   location: string;
+  quartier: string;
   imageUrl: string;
   images: string[];
   features: string[];
@@ -27,183 +30,67 @@ const mockProperties: Property[] = [
   {
     id: '1',
     createdAt: new Date().toISOString().split('T')[0],
-    title: 'Belle Villa Moderne',
-    description: 'Magnifique villa avec vue sur mer, prestations haut de gamme, piscine à débordement et jardin paysager',
-    price: 450000,
-    surface: 200,
+    title: 'Villa Moderne à Casablanca',
+    description: 'Villa moderne avec piscine et jardin dans un quartier résidentiel.',
+    price: 500000,
+    surface: 300,
     type: 'villa',
     bedrooms: 4,
     bathrooms: 3,
-    location: 'Nice',
+    location: 'Casablanca',
+    quartier: 'Anfa',
     imageUrl: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=500',
     images: [
       'https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=500',
       'https://images.unsplash.com/photo-1613977257363-707ba9348227?q=80&w=500',
       'https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?q=80&w=500',
     ],
-    features: ['Piscine', 'Jardin', 'Vue mer', 'Garage'],
+    features: ['Piscine', 'Jardin', 'Garage'],
     status: 'À vendre'
   },
   {
     id: '2',
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    title: 'Appartement Haussmannien',
-    description: 'Superbe appartement avec moulures et parquet d\'époque, proche des Champs-Élysées',
-    price: 880000,
-    surface: 85,
+    title: 'Appartement à Rabat',
+    description: 'Appartement spacieux avec vue sur le fleuve Bouregreg.',
+    price: 300000,
+    surface: 120,
     type: 'apartment',
-    bedrooms: 2,
-    bathrooms: 1,
-    location: 'Paris 8ème',
+    bedrooms: 3,
+    bathrooms: 2,
+    location: 'Rabat',
+    quartier: 'Agdal',
     imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=500',
     images: [
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=500',
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=500',
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=500',
     ],
-    features: ['Parking', 'Balcon', 'Ascenseur', 'Cave'],
+    features: ['Balcon', 'Ascenseur', 'Parking'],
     status: 'À vendre'
   },
   {
     id: '3',
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    title: 'Loft Industriel',
-    description: 'Ancien atelier rénové avec goût, grandes hauteurs sous plafond et matériaux nobles',
-    price: 595000,
-    surface: 120,
-    type: 'loft',
-    bedrooms: 2,
-    bathrooms: 2,
-    location: 'Lyon',
+    title: 'Riad à Marrakech',
+    description: 'Riad traditionnel avec patio et fontaine, situé dans la médina.',
+    price: 750000,
+    surface: 250,
+    type: 'riad',
+    bedrooms: 5,
+    bathrooms: 4,
+    location: 'Marrakech',
+    quartier: 'Médina',
     imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=500',
     images: [
       'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=500',
       'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=500',
       'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=500',
     ],
-    features: ['Style industriel', 'Terrasse', 'Climatisation'],
+    features: ['Patio', 'Fontaine', 'Terrasse'],
     status: 'À vendre'
   },
-  {
-    id: '4',
-    createdAt: '2024-03-17',
-    title: 'Maison Contemporaine',
-    description: 'Maison d\'architecte aux lignes épurées avec domotique intégrée et performances énergétiques',
-    price: 720000,
-    surface: 160,
-    type: 'house',
-    bedrooms: 4,
-    bathrooms: 2,
-    location: 'Bordeaux',
-    imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500',
-    images: [
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500',
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500',
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500',
-    ],
-    features: ['Domotique', 'Jardin', 'Garage double'],
-    status: 'À vendre'
-  },
-  {
-    id: '5',
-    createdAt: '2024-03-16',
-    title: 'Duplex avec Rooftop',
-    description: 'Magnifique duplex avec terrasse sur le toit offrant une vue panoramique sur la ville',
-    price: 495000,
-    surface: 95,
-    type: 'apartment',
-    bedrooms: 3,
-    bathrooms: 2,
-    location: 'Marseille',
-    imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=500',
-    images: [
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=500',
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=500',
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=500',
-    ],
-    features: ['Terrasse', 'Vue panoramique', 'Climatisation'],
-    status: 'À vendre'
-  },
-  {
-    id: '6',
-    createdAt: '2024-03-15',
-    title: 'Maison de Ville',
-    description: 'Charmante maison de ville avec cour intérieure et dépendance aménageable',
-    price: 385000,
-    surface: 140,
-    type: 'house',
-    bedrooms: 3,
-    bathrooms: 2,
-    location: 'Nantes',
-    imageUrl: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=500',
-    images: [
-      'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=500',
-      'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=500',
-      'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=500',
-    ],
-    features: ['Cour intérieure', 'Cave à vin', 'Dépendance'],
-    status: 'À vendre'
-  },
-  {
-    id: '7',
-    createdAt: '2024-03-14',
-    title: 'Studio Premium',
-    description: 'Studio haut de gamme entièrement meublé et équipé, idéal investissement locatif',
-    price: 245000,
-    surface: 35,
-    type: 'studio',
-    bedrooms: 1,
-    bathrooms: 1,
-    location: 'Paris 16ème',
-    imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=500',
-    images: [
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=500',
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=500',
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=500',
-    ],
-    features: ['Meublé', 'Équipé', 'Gardien'],
-    status: 'À vendre'
-  },
-  {
-    id: '8',
-    createdAt: '2024-03-13',
-    title: 'Villa Provençale',
-    description: 'Authentique villa provençale avec oliviers centenaires et piscine traditionnelle',
-    price: 890000,
-    surface: 250,
-    type: 'villa',
-    bedrooms: 5,
-    bathrooms: 3,
-    location: 'Aix-en-Provence',
-    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=500',
-    images: [
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=500',
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=500',
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=500',
-    ],
-    features: ['Piscine', 'Oliveraie', 'Pool house'],
-    status: 'À vendre'
-  },
-  {
-    id: '9',
-    createdAt: '2024-03-12',
-    title: 'Penthouse Design',
-    description: 'Penthouse d\'exception avec terrasses et jacuzzi, vue imprenable sur la ville',
-    price: 1250000,
-    surface: 180,
-    type: 'penthouse',
-    bedrooms: 4,
-    bathrooms: 3,
-    location: 'Lyon',
-    imageUrl: 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?q=80&w=500',
-    images: [
-      'https://images.unsplash.com/photo-1600607687644-c7171b42498b?q=80&w=500',
-      'https://images.unsplash.com/photo-1600607687644-c7171b42498b?q=80&w=500',
-      'https://images.unsplash.com/photo-1600607687644-c7171b42498b?q=80&w=500',
-    ],
-    features: ['Jacuzzi', 'Domotique', 'Cave à vin'],
-    status: 'À vendre'
-  }
+  // Add more properties as needed
 ];
 
 // Add new filter types
@@ -214,6 +101,7 @@ type Filters = {
   bathrooms: number[];
   propertyTypes: string[];
   locations: string[];
+  quartiers: string[];
 }
 
 export default function DemoAppPage() {
@@ -225,17 +113,56 @@ export default function DemoAppPage() {
     bedrooms: [],
     bathrooms: [],
     propertyTypes: [],
-    locations: []
+    locations: [],
+    quartiers: []
   });
 
+  // Fetch properties from database
+  const { data: dbProperties, isLoading, error } = useQuery(getProperties);
+  
+  // Combine mock and database properties
+  const allProperties = useMemo(() => {
+    if (!dbProperties) return mockProperties;
+    
+    // Convert DB properties to match the Property type
+    const formattedDbProperties = dbProperties.map(dbProp => ({
+      id: dbProp.id,
+      createdAt: dbProp.createdAt.toISOString().split('T')[0],
+      title: dbProp.title,
+      description: dbProp.description,
+      price: dbProp.price,
+      surface: dbProp.surface,
+      type: dbProp.type,
+      bedrooms: dbProp.bedrooms,
+      bathrooms: dbProp.bathrooms,
+      location: dbProp.city,
+      quartier: dbProp.quartier || 'N/A',
+      imageUrl: dbProp.imageUrl,
+      images: dbProp.images,
+      features: dbProp.features,
+      status: dbProp.status
+    }));
+
+    // Combine mock and DB properties, with DB properties first
+    return [...formattedDbProperties, ...mockProperties];
+  }, [dbProperties]);
+
   // Get unique values for filters
-  const propertyTypes = Array.from(new Set(mockProperties.map(p => p.type)));
-  const locations = Array.from(new Set(mockProperties.map(p => p.location)));
+  const propertyTypes = Array.from(new Set(allProperties.map(p => p.type)));
+  const locations = Array.from(new Set(allProperties.map(p => p.location)));
   const bedroomOptions = [1, 2, 3, 4, 5];
   const bathroomOptions = [1, 2, 3, 4];
 
+  // Get unique quartiers based on the selected city
+  const filteredQuartiers = useMemo(() => {
+    if (filters.locations.length === 0) return [];
+    return Array.from(new Set(allProperties
+      .filter(p => filters.locations.includes(p.location))
+      .map(p => p.quartier)));
+  }, [filters.locations, allProperties]);
+
   // Filter properties based on all criteria
-  const filteredProperties = mockProperties.filter(property => {
+  const filteredProperties = allProperties.filter(property => {
     const matchesSearch = 
       property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -265,8 +192,13 @@ export default function DemoAppPage() {
       filters.locations.length === 0 || 
       filters.locations.includes(property.location);
 
+    const matchesQuartier = 
+      filters.quartiers.length === 0 || 
+      filters.quartiers.includes(property.quartier);
+
     return matchesSearch && matchesPrice && matchesSurface && 
-           matchesBedrooms && matchesBathrooms && matchesType && matchesLocation;
+           matchesBedrooms && matchesBathrooms && matchesType && 
+           matchesLocation && matchesQuartier;
   });
 
   return (
@@ -468,8 +400,8 @@ export default function DemoAppPage() {
                           onClick={() => {
                             const newLocations = filters.locations.includes(location)
                               ? filters.locations.filter(l => l !== location)
-                              : [...filters.locations, location];
-                            setFilters({ ...filters, locations: newLocations });
+                              : [location]; // Allow only one city at a time
+                            setFilters({ ...filters, locations: newLocations, quartiers: [] });
                           }}
                           className={`px-3 py-1 rounded-full text-sm transition-all duration-300
                                     ${filters.locations.includes(location)
@@ -481,6 +413,36 @@ export default function DemoAppPage() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Quartier Dropdown */}
+                  {filters.locations.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <MapPin className="w-4 h-4" />
+                        <h3 className="font-medium">Quartier</h3>
+                      </div>
+                      <select
+                        value={filters.quartiers[0] || ''} // Since we'll only allow one quartier at a time
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFilters({
+                            ...filters,
+                            quartiers: value ? [value] : [] // Empty array if no selection
+                          });
+                        }}
+                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg
+                                   text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500
+                                   focus:border-transparent transition-all duration-300"
+                      >
+                        <option value="">Tous les quartiers</option>
+                        {filteredQuartiers.map((quartier) => (
+                          <option key={quartier} value={quartier}>
+                            {quartier}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -615,16 +577,16 @@ function PropertyCard({ property }: { property: Property }) {
         {/* Gradient Overlay */}
         <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent'/>
 
-        {/* Location Badge */}
+        {/* Location and Quartier Badge */}
         <div className='absolute bottom-4 left-4 z-10'>
-        <div className='flex items-center text-white bg-black/30 
-                         rounded-lg px-3 py-1.5 transition-all duration-300
-                         group-hover:bg-black/50'>
-            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-            </svg>
-            {property.location}
-          </div>
+          <div className='flex items-center text-white bg-black/30 
+                           rounded-lg px-3 py-1.5 transition-all duration-300
+                           group-hover:bg-black/50'>
+              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+              {property.location}, {property.quartier}
+            </div>
         </div>
 
         {/* Rental Info Tooltip - Modified to respect showTooltip state */}

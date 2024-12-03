@@ -168,10 +168,13 @@ const PROPERTY_CONDITIONS = [
 ];
 
 const CITY_PRICE_DATA: Record<string, number> = {
-  "Paris": 10500,
-  "Lyon": 5200,
-  "Marseille": 3800,
-  // ... add other cities
+  "Casablanca": 25000,
+  "Rabat": 22000,
+  "Marrakech": 18000,
+  "Tanger": 16000,
+  "Agadir": 15000,
+  "Fès": 14000,
+  // ... add other Moroccan cities
 };
 
 const generatePriceEvolution = (basePrice: number) => {
@@ -608,19 +611,36 @@ export default function NouveauProjet() {
   const { data: user } = useAuth();
   const { data: existingProjects = [] } = useQuery(getUserProjects);
   
-  const calculateProjectAnalysis = (data: ProjectData): ProjectAnalysis => {
+  const calculateProjectAnalysis = (data: ProjectData, currentInsurance: number = 0): ProjectAnalysis => {
     const price = parseFloat(data.price);
     const surface = parseFloat(data.surface);
     
+    // Monthly loan payment calculation
     const monthlyPayment = calculateMonthlyPayment(price, interestRate, loanDuration);
+    const totalMonthlyPayment = monthlyPayment + currentInsurance;
+    
+    // Total interest over loan duration
     const totalInterest = (monthlyPayment * loanDuration * 12) - price;
-    const estimatedRent = surface * (CITY_PRICE_DATA[data.city] || 15) / 200; // Estimated monthly rent
-    const rentalYield = (estimatedRent * 12) / price * 100;
-    const roi = 8.5;
-    const breakEvenPoint = price / (estimatedRent * 12);
+    
+    // Rental calculations
+    const estimatedRent = surface * (CITY_PRICE_DATA[data.city as keyof typeof CITY_PRICE_DATA] || 15000) / 200;
+    
+    // Rendement locatif (Rental Yield) = (Annual Rent / Total Investment) * 100
+    const totalInvestment = price + notaryFees + fileFees + agencyFees + renovationCost;
+    const rentalYield = ((estimatedRent * 12) / totalInvestment) * 100;
+    
+    // ROI calculation including all costs and rental income
+    const annualCosts = (totalMonthlyPayment * 12) + (totalInvestment * 0.01); // Including 1% maintenance
+    const annualIncome = estimatedRent * 12;
+    const annualProfit = annualIncome - annualCosts;
+    const roi = Number(((annualProfit / totalInvestment) * 100).toFixed(2));
+    
+    // Point d'équilibre (Break-even point) considering all costs
+    const monthlyProfit = estimatedRent - totalMonthlyPayment;
+    const breakEvenPoint = monthlyProfit > 0 ? totalInvestment / (monthlyProfit * 12) : 99;
 
     return {
-      monthlyPayment,
+      monthlyPayment: totalMonthlyPayment,
       totalInterest,
       rentalYield,
       estimatedRent,
@@ -755,6 +775,23 @@ export default function NouveauProjet() {
     }
   };
 
+  // Update the analysis whenever relevant values change
+  useEffect(() => {
+    if (projectData) {
+      setAnalysis(calculateProjectAnalysis(projectData, insurance));
+    }
+  }, [
+    projectData,
+    insurance,
+    loanDuration,
+    interestRate,
+    notaryFees,
+    fileFees,
+    agencyFees,
+    renovationCost,
+    personalContribution
+  ]);
+
   return (
     <div className="flex">
       <Toaster position="top-right" />
@@ -803,19 +840,19 @@ export default function NouveauProjet() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <AnalysisCard
                   title="Mensualité Estimée"
-                  value={`${analysis.monthlyPayment.toLocaleString()}€`}
+                  value={`${analysis.monthlyPayment.toLocaleString()} DH`}
                   icon={Calculator}
                   subtitle="par mois"
                 />
                 <AnalysisCard
                   title="Intérêts Totaux"
-                  value={`${analysis.totalInterest.toLocaleString()}€`}
+                  value={`${analysis.totalInterest.toLocaleString()} DH`}
                   icon={Euro}
                   subtitle="sur la durée du prêt"
                 />
                 <AnalysisCard
                   title="Loyer Estimé"
-                  value={`${analysis.estimatedRent.toLocaleString()}€`}
+                  value={`${analysis.estimatedRent.toLocaleString()} DH`}
                   icon={Home}
                   subtitle="par mois"
                 />
@@ -827,7 +864,7 @@ export default function NouveauProjet() {
                 />
                 <AnalysisCard
                   title="Retour sur Investissement"
-                  value={`${analysis.roi}%`}
+                  value={`${analysis.roi.toFixed(2)}%`}
                   icon={ChartBar}
                   subtitle="ROI projeté"
                 />
@@ -871,22 +908,25 @@ export default function NouveauProjet() {
                       value={analysis.monthlyPayment.toFixed(2)}
                       onChange={() => {}}
                       disabled={true}
-                      suffix="€/mois"
+                      suffix="DH/mois"
                     />
                     <InputField
                       label="Assurance"
                       value={insurance}
                       onChange={(e) => {
-                        setInsurance(Number(e.target.value));
-                        setAnalysis(calculateProjectAnalysis(projectData));
+                        const newInsurance = Number(e.target.value);
+                        setInsurance(newInsurance);
+                        if (projectData) {
+                          setAnalysis(calculateProjectAnalysis(projectData, newInsurance));
+                        }
                       }}
-                      suffix="€/mois"
+                      suffix="DH/mois"
                     />
                     <InputField
                       label="Coût total du crdit"
                       value={analysis.totalInterest.toFixed(2)}
                       onChange={() => {/* handle change */}}
-                      suffix="€"
+                      suffix="DH"
                     />
                   </div>
                 </CollapsibleSection>
@@ -949,7 +989,7 @@ export default function NouveauProjet() {
                         setNotaryFees(Number(e.target.value));
                         setAnalysis(calculateProjectAnalysis(projectData));
                       }}
-                      suffix="€"
+                      suffix="DH"
                     />
                     <InputField
                       label="Frais de dossier"
@@ -958,7 +998,7 @@ export default function NouveauProjet() {
                         setFileFees(Number(e.target.value));
                         setAnalysis(calculateProjectAnalysis(projectData));
                       }}
-                      suffix="€"
+                      suffix="DH"
                     />
                     <InputField
                       label="Frais d'agence"
@@ -967,7 +1007,7 @@ export default function NouveauProjet() {
                         setAgencyFees(Number(e.target.value));
                         setAnalysis(calculateProjectAnalysis(projectData));
                       }}
-                      suffix="€"
+                      suffix="DH"
                     />
                     <InputField
                       label="Travaux prévus"
@@ -976,7 +1016,7 @@ export default function NouveauProjet() {
                         setRenovationCost(Number(e.target.value));
                         setAnalysis(calculateProjectAnalysis(projectData));
                       }}
-                      suffix="€"
+                      suffix="DH"
                     />
                     <InputField
                       label="Apport personnel"
@@ -985,14 +1025,14 @@ export default function NouveauProjet() {
                         setPersonalContribution(Number(e.target.value));
                         setAnalysis(calculateProjectAnalysis(projectData));
                       }}
-                      suffix="€"
+                      suffix="DH"
                     />
                     <InputField
                       label="Coût total de l'opération"
                       value={(parseInt(projectData.price) + notaryFees + fileFees + agencyFees + renovationCost).toFixed(2)}
                       disabled={true}
                       onChange={() => {}}
-                      suffix="€"
+                      suffix="DH"
                     />
                   </div>
                 </CollapsibleSection>
@@ -1010,12 +1050,12 @@ export default function NouveauProjet() {
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <span className="text-gray-400">Prix d'achat</span>
-                            <span className="text-white">{parseInt(projectData.price).toLocaleString()}€</span>
+                            <span className="text-white">{parseInt(projectData.price).toLocaleString()} DH</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-400">Valeur estimée</span>
                             <span className="text-white">
-                              {(parseInt(projectData.price) * Math.pow(1.035, 10)).toLocaleString()}€
+                              {(parseInt(projectData.price) * Math.pow(1.035, 10)).toLocaleString()} DH
                             </span>
                           </div>
                           <div className="flex justify-between">

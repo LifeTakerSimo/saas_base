@@ -10,6 +10,7 @@ import type {
 import { HttpError } from 'wasp/server';
 import { GeneratedSchedule } from './schedule';
 import OpenAI from 'openai';
+import { Property } from '@prisma/client';
 
 const openai = setupOpenAI();
 function setupOpenAI() {
@@ -258,4 +259,22 @@ export const getAllTasksByUser: GetAllTasksByUser<void, Task[]> = async (_args, 
     },
   });
 };
-//#endregion
+
+export const getProperties = async (args: any, context: any): Promise<Property[]> => {
+  if (!context.user) {
+    throw new Error('User not authenticated');
+  }
+
+  const properties = await context.entities.Property.findMany({
+    include: {
+      propertyType: true,
+      city: true,
+      region: true,
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+  });
+
+  return properties;
+};
