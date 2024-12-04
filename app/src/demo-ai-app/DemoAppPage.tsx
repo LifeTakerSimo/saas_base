@@ -6,6 +6,7 @@ import { Button } from '../landing-page/components/ui/button';
 import { EnhancedInput } from '../components/ui/enhanced-input';
 import { useQuery } from 'wasp/client/operations';
 import { getProperties } from 'wasp/client/operations';
+import { Link } from 'react-router-dom';
 
 type Property = {
   id: string;
@@ -116,7 +117,8 @@ export default function DemoAppPage() {
     locations: [],
     quartiers: []
   });
-
+  
+  /*  
   // Fetch properties from database
   const { data: dbProperties, isLoading, error } = useQuery(getProperties);
   
@@ -137,15 +139,17 @@ export default function DemoAppPage() {
       bathrooms: dbProp.bathrooms,
       location: dbProp.city,
       quartier: dbProp.quartier || 'N/A',
-      imageUrl: dbProp.imageUrl,
-      images: dbProp.images,
-      features: dbProp.features,
+      imageUrl: dbProp.imageUrl || '',
+      images: dbProp.images || [],
+      features: dbProp.features || [],
       status: dbProp.status
     }));
 
     // Combine mock and DB properties, with DB properties first
     return [...formattedDbProperties, ...mockProperties];
   }, [dbProperties]);
+  */
+  const allProperties = mockProperties;
 
   // Get unique values for filters
   const propertyTypes = Array.from(new Set(allProperties.map(p => p.type)));
@@ -153,7 +157,7 @@ export default function DemoAppPage() {
   const bedroomOptions = [1, 2, 3, 4, 5];
   const bathroomOptions = [1, 2, 3, 4];
 
-  // Get unique quartiers based on the selected city
+  // Get unique quartiers based on selected cities
   const filteredQuartiers = useMemo(() => {
     if (filters.locations.length === 0) return [];
     return Array.from(new Set(allProperties
@@ -387,7 +391,7 @@ export default function DemoAppPage() {
                     </div>
                   </div>
 
-                  {/* Location */}
+                  {/* City Selection */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-gray-300">
                       <MapPin className="w-4 h-4" />
@@ -400,8 +404,12 @@ export default function DemoAppPage() {
                           onClick={() => {
                             const newLocations = filters.locations.includes(location)
                               ? filters.locations.filter(l => l !== location)
-                              : [location]; // Allow only one city at a time
-                            setFilters({ ...filters, locations: newLocations, quartiers: [] });
+                              : [...filters.locations, location]; // Allow multiple cities
+                            setFilters({ 
+                              ...filters, 
+                              locations: newLocations,
+                              quartiers: [] // Reset quartiers when cities change
+                            });
                           }}
                           className={`px-3 py-1 rounded-full text-sm transition-all duration-300
                                     ${filters.locations.includes(location)
@@ -414,33 +422,34 @@ export default function DemoAppPage() {
                     </div>
                   </div>
 
-                  {/* Quartier Dropdown */}
+                  {/* Quartier Dropdown - Only show when cities are selected */}
                   {filters.locations.length > 0 && (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-gray-300">
                         <MapPin className="w-4 h-4" />
-                        <h3 className="font-medium">Quartier</h3>
+                        <h3 className="font-medium">
+                          Quartiers {filters.locations.length > 0 && `(${filters.locations.join(', ')})`}
+                        </h3>
                       </div>
-                      <select
-                        value={filters.quartiers[0] || ''} // Since we'll only allow one quartier at a time
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setFilters({
-                            ...filters,
-                            quartiers: value ? [value] : [] // Empty array if no selection
-                          });
-                        }}
-                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg
-                                   text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500
-                                   focus:border-transparent transition-all duration-300"
-                      >
-                        <option value="">Tous les quartiers</option>
+                      <div className="flex flex-wrap gap-2">
                         {filteredQuartiers.map((quartier) => (
-                          <option key={quartier} value={quartier}>
+                          <button
+                            key={quartier}
+                            onClick={() => {
+                              const newQuartiers = filters.quartiers.includes(quartier)
+                                ? filters.quartiers.filter(q => q !== quartier)
+                                : [...filters.quartiers, quartier];
+                              setFilters({ ...filters, quartiers: newQuartiers });
+                            }}
+                            className={`px-3 py-1 rounded-full text-sm transition-all duration-300
+                                      ${filters.quartiers.includes(quartier)
+                                        ? 'bg-purple-500 text-white'
+                                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+                          >
                             {quartier}
-                          </option>
+                          </button>
                         ))}
-                      </select>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -506,236 +515,238 @@ function PropertyCard({ property }: { property: Property }) {
   };
 
   return (
-    <div className='group relative bg-gray-900/40 rounded-2xl shadow-lg overflow-hidden 
-                    border border-gray-800/50 hover:border-purple-500/50
-                    transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl
-                    hover:shadow-primary/20 cursor-pointer'>
-      {/* Image Container */}
-      <div className='relative aspect-[4/3] overflow-hidden'>
-        {isNew() && (
-          <div className='absolute top-4 right-4 z-20'>
-            <div className='bg-primary text-white text-xs font-semibold px-2.5 py-1 rounded-full
-                          shadow-lg animate-pulse'>
-              Nouveau
+    <Link to={`/property/${property.id}`} className="block">
+      <div className='group relative bg-gray-900/40 rounded-2xl shadow-lg overflow-hidden 
+                      border border-gray-800/50 hover:border-purple-500/50
+                      transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl
+                      hover:shadow-primary/20 cursor-pointer'>
+        {/* Image Container */}
+        <div className='relative aspect-[4/3] overflow-hidden'>
+          {isNew() && (
+            <div className='absolute top-4 right-4 z-20'>
+              <div className='bg-primary text-white text-xs font-semibold px-2.5 py-1 rounded-full
+                            shadow-lg animate-pulse'>
+                Nouveau
+              </div>
             </div>
-          </div>
-        )}
-        
-        {/* Navigation Arrows */}
-        {property.images.length > 1 && (
-          <>
-            <button
-              onClick={previousImage}
-              className='absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full
+          )}
+          
+          {/* Navigation Arrows */}
+          {property.images.length > 1 && (
+            <>
+              <button
+                onClick={previousImage}
+                className='absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full
                        bg-black/30 text-white hover:bg-black/50 transition-colors
                        opacity-0 group-hover:opacity-100'
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={nextImage}
-              className='absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={nextImage}
+                className='absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full
                        bg-black/30 text-white hover:bg-black/50 transition-colors
                       opacity-0 group-hover:opacity-100'
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </>
-        )}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
 
-        {/* Center area for tooltip trigger */}
-        <div 
-          className='absolute top-0 left-1/4 right-1/4 h-full z-10'
-          onMouseEnter={handleCenterAreaMouseEnter}
-        />
+          {/* Center area for tooltip trigger */}
+          <div 
+            className='absolute top-0 left-1/4 right-1/4 h-full z-10'
+            onMouseEnter={handleCenterAreaMouseEnter}
+          />
 
-        {/* Image */}
-        <img
-          src={property.images[currentImageIndex]}
-          alt={property.title}
-          className='w-full h-full object-cover transition-transform duration-700 ease-in-out 
-                     group-hover:scale-110'
-        />
+          {/* Image */}
+          <img
+            src={property.images[currentImageIndex]}
+            alt={property.title}
+            className='w-full h-full object-cover transition-transform duration-700 ease-in-out 
+                       group-hover:scale-110'
+          />
 
-        {/* Image Indicators */}
-        {property.images.length > 1 && (
-          <div className='absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1.5'>
-            {property.images.map((_, index) => (
-              <div
-                key={index}
-                className={`w-1.5 h-1.5 rounded-full transition-colors
-                          ${index === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}
-              />
-            ))}
-          </div>
-        )}
+          {/* Image Indicators */}
+          {property.images.length > 1 && (
+            <div className='absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1.5'>
+              {property.images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full transition-colors
+                            ${index === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}
+                />
+              ))}
+            </div>
+          )}
 
-        {/* Gradient Overlay */}
-        <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent'/>
+          {/* Gradient Overlay */}
+          <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent'/>
 
-        {/* Location and Quartier Badge */}
-        <div className='absolute bottom-4 left-4 z-10'>
-          <div className='flex items-center text-white bg-black/30 
+          {/* Location and Quartier Badge */}
+          <div className='absolute bottom-4 left-4 z-10'>
+            <div className='flex items-center text-white bg-black/30 
                            rounded-lg px-3 py-1.5 transition-all duration-300
                            group-hover:bg-black/50'>
-              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-              </svg>
-              {property.location}, {property.quartier}
-            </div>
-        </div>
-
-        {/* Rental Info Tooltip - Modified to respect showTooltip state */}
-        <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center 
-                       opacity-0 ${showTooltip ? 'group-hover:opacity-100' : ''} transition-opacity duration-300`}>
-          <div className='bg-black/70 md p-6 rounded-xl transform 
-                         translate-y-4 group-hover:translate-y-0 transition-transform duration-300
-                         text-white shadow-xl mx-4'>
-            <div className='grid grid-cols-3 gap-6'>
-              {/* Rendement Brut */}
-              <div className='text-center'>
-                <div className='text-primary font-bold text-2xl mb-1'>
-                  5.2%
-                </div>
-                <div className='text-xs text-gray-300'>
-                  Rendement Brut
-                </div>
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                {property.location}, {property.quartier}
               </div>
-
-              {/* Rendement Ville */}
-              <div className='text-center border-x border-gray-500/30 px-4'>
-                <div className='text-green-400 font-bold text-2xl mb-1'>
-                  4.8%
-                </div>
-                <div className='text-xs text-gray-300'>
-                  Rendement Ville
-                </div>
-              </div>
-
-              {/* Loyer Conseillé */}
-              <div className='text-center'>
-                <div className='text-white font-bold text-2xl mb-1'>
-                  {Math.round(property.price * 0.004).toLocaleString()}€
-                </div>
-                <div className='text-xs text-gray-300'>
-                  Loyer Conseillé
-                </div>
-              </div>
-            </div>
-
-            {/* Additional Info */}
-            <div className='mt-4 pt-4 border-t border-gray-500/30 text-center'>
-              <span className='text-xs text-gray-300'>
-                Rentabilité supérieure à la moyenne de la ville
-              </span>
-            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Content */}
-      <div className='p-5 relative z-10'>
-        <div className='flex justify-between items-start mb-4'>
-          <h3 className='text-lg font-bold text-gray-100 line-clamp-1 
-                        group-hover:text-primary transition-colors duration-300'>
-            {property.title}
-          </h3>
-          <span className='text-primary font-bold text-lg'>
-            {property.price.toLocaleString()}€
-          </span>
-        </div>
+          {/* Rental Info Tooltip - Modified to respect showTooltip state */}
+          <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center 
+                         opacity-0 ${showTooltip ? 'group-hover:opacity-100' : ''} transition-opacity duration-300`}>
+            <div className='bg-black/70 md p-6 rounded-xl transform 
+                           translate-y-4 group-hover:translate-y-0 transition-transform duration-300
+                           text-white shadow-xl mx-4'>
+              <div className='grid grid-cols-3 gap-6'>
+                {/* Rendement Brut */}
+                <div className='text-center'>
+                  <div className='text-primary font-bold text-2xl mb-1'>
+                    5.2%
+                  </div>
+                  <div className='text-xs text-gray-300'>
+                    Rendement Brut
+                  </div>
+                </div>
 
-        {/* Analysis Container */}
-        <div className='rounded-xl p-4 mb-4
-                      bg-gradient-to-br from-gray-900/80 to-gray-800/80
-                      border border-gray-700/50 
-                      group-hover:border-purple-500/30
-                      transition-all duration-300
-                      shadow-[0_4px_20px_rgba(0,0,0,0.2)]
-                      group-hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)]'>
-          <p className='text-gray-300 text-sm line-clamp-2 mb-3'>
-            {property.description}
-          </p>
-          
-          {/* Market Analysis */}
-          <div className='border-t border-gray-700/50 pt-3 
-                         group-hover:border-purple-500/20 transition-colors'>
-            <h4 className='text-sm font-semibold text-primary mb-2'>Analyse du marché</h4>
-            <div className='grid grid-cols-2 gap-3 text-xs'>
-              <div className='flex flex-col p-2 rounded-lg bg-gray-900/50 
-                            border border-gray-800/50 group-hover:border-purple-500/20'>
-                <span className='text-gray-400'>Prix/m²</span>
-                <span className='font-medium text-white'>
-                  {Math.round(property.price / property.surface).toLocaleString()}€
+                {/* Rendement Ville */}
+                <div className='text-center border-x border-gray-500/30 px-4'>
+                  <div className='text-green-400 font-bold text-2xl mb-1'>
+                    4.8%
+                  </div>
+                  <div className='text-xs text-gray-300'>
+                    Rendement Ville
+                  </div>
+                </div>
+
+                {/* Loyer Conseillé */}
+                <div className='text-center'>
+                  <div className='text-white font-bold text-2xl mb-1'>
+                    {Math.round(property.price * 0.004).toLocaleString()}€
+                  </div>
+                  <div className='text-xs text-gray-300'>
+                    Loyer Conseillé
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className='mt-4 pt-4 border-t border-gray-500/30 text-center'>
+                <span className='text-xs text-gray-300'>
+                  Rentabilité supérieure à la moyenne de la ville
                 </span>
               </div>
-              <div className='flex flex-col p-2 rounded-lg bg-gray-900/50 
-                            border border-gray-800/50 group-hover:border-purple-500/20'>
-                <span className='text-gray-400'>Prix moyen du quartier</span>
-                <span className='font-medium text-white'>
-                  {(property.price * 0.95).toLocaleString()}€
-                </span>
-              </div>
-              <div className='flex flex-col p-2 rounded-lg bg-gray-900/50 
-                            border border-gray-800/50 group-hover:border-purple-500/20'>
-                <span className='text-gray-400'>Potentiel locatif</span>
-                <span className='font-medium text-green-500'>Élevé</span>
-              </div>
-              <div className='flex flex-col p-2 rounded-lg bg-gray-900/50 
-                            border border-gray-800/50 group-hover:border-purple-500/20'>
-                <span className='text-gray-400'>Évolution prix</span>
-                <span className='font-medium text-primary'>+3.5% /an</span>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Property Details */}
-        <div className='grid grid-cols-2 gap-3 mb-4'>
-          <div className='flex items-center text-gray-600 dark:text-gray-400 text-sm 
-                         group-hover:text-primary transition-colors duration-300'>
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-            </svg>
-            {property.surface}m²
-          </div>
-          <div className='flex items-center text-gray-600 dark:text-gray-400 text-sm 
-                         group-hover:text-primary transition-colors duration-300'>
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-            {property.bedrooms} chambres
-          </div>
-        </div>
-
-        {/* Features Tags */}
-        <div className='flex flex-wrap gap-1.5'>
-          {property.features.map((feature, index) => (
-            <span 
-              key={index}
-              className='text-gray-300 
-                       relative
-                       border border-gray-700/50
-                       text-xs px-2.5 py-1 rounded-full 
-                       transition-all duration-300
-                       hover:scale-105 
-                       hover:bg-gradient-to-r hover:from-purple-600/80 hover:to-blue-500/80 
-                       hover:border-purple-500/30
-                       hover:text-white
-                       hover:shadow-lg hover:shadow-purple-500/20
-                       bg-gray-900/50'
-            >
-              {feature}
+        {/* Content */}
+        <div className='p-5 relative z-10'>
+          <div className='flex justify-between items-start mb-4'>
+            <h3 className='text-lg font-bold text-gray-100 line-clamp-1 
+                          group-hover:text-primary transition-colors duration-300'>
+              {property.title}
+            </h3>
+            <span className='text-primary font-bold text-lg'>
+              {property.price.toLocaleString()}€
             </span>
-          ))}
+          </div>
+
+          {/* Analysis Container */}
+          <div className='rounded-xl p-4 mb-4
+                        bg-gradient-to-br from-gray-900/80 to-gray-800/80
+                        border border-gray-700/50 
+                        group-hover:border-purple-500/30
+                        transition-all duration-300
+                        shadow-[0_4px_20px_rgba(0,0,0,0.2)]
+                        group-hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)]'>
+            <p className='text-gray-300 text-sm line-clamp-2 mb-3'>
+              {property.description}
+            </p>
+            
+            {/* Market Analysis */}
+            <div className='border-t border-gray-700/50 pt-3 
+                           group-hover:border-purple-500/20 transition-colors'>
+              <h4 className='text-sm font-semibold text-primary mb-2'>Analyse du marché</h4>
+              <div className='grid grid-cols-2 gap-3 text-xs'>
+                <div className='flex flex-col p-2 rounded-lg bg-gray-900/50 
+                              border border-gray-800/50 group-hover:border-purple-500/20'>
+                  <span className='text-gray-400'>Prix/m²</span>
+                  <span className='font-medium text-white'>
+                    {Math.round(property.price / property.surface).toLocaleString()}€
+                  </span>
+                </div>
+                <div className='flex flex-col p-2 rounded-lg bg-gray-900/50 
+                              border border-gray-800/50 group-hover:border-purple-500/20'>
+                  <span className='text-gray-400'>Prix moyen du quartier</span>
+                  <span className='font-medium text-white'>
+                    {(property.price * 0.95).toLocaleString()}€
+                  </span>
+                </div>
+                <div className='flex flex-col p-2 rounded-lg bg-gray-900/50 
+                              border border-gray-800/50 group-hover:border-purple-500/20'>
+                  <span className='text-gray-400'>Potentiel locatif</span>
+                  <span className='font-medium text-green-500'>Élevé</span>
+                </div>
+                <div className='flex flex-col p-2 rounded-lg bg-gray-900/50 
+                              border border-gray-800/50 group-hover:border-purple-500/20'>
+                  <span className='text-gray-400'>Évolution prix</span>
+                  <span className='font-medium text-primary'>+3.5% /an</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Property Details */}
+          <div className='grid grid-cols-2 gap-3 mb-4'>
+            <div className='flex items-center text-gray-600 dark:text-gray-400 text-sm 
+                           group-hover:text-primary transition-colors duration-300'>
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+              {property.surface}m²
+            </div>
+            <div className='flex items-center text-gray-600 dark:text-gray-400 text-sm 
+                           group-hover:text-primary transition-colors duration-300'>
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              {property.bedrooms} chambres
+            </div>
+          </div>
+
+          {/* Features Tags */}
+          <div className='flex flex-wrap gap-1.5'>
+            {property.features.map((feature, index) => (
+              <span 
+                key={index}
+                className='text-gray-300 
+                         relative
+                         border border-gray-700/50
+                         text-xs px-2.5 py-1 rounded-full 
+                         transition-all duration-300
+                         hover:scale-105 
+                         hover:bg-gradient-to-r hover:from-purple-600/80 hover:to-blue-500/80 
+                         hover:border-purple-500/30
+                         hover:text-white
+                         hover:shadow-lg hover:shadow-purple-500/20
+                         bg-gray-900/50'
+              >
+                {feature}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

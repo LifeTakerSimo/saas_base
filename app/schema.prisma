@@ -290,21 +290,3 @@ model Region {
   @@index([tauxActivite])
   @@index([name])
 }
-
-model Notification {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-
-  searchQuery String   // The search query or criteria
-  isActive    Boolean  @default(true) // Whether the notification is active
-  frequency   String   // e.g., 'daily', 'weekly', 'monthly'
-  lastSent    DateTime? // When the last notification was sent
-
-  // Metadata
-  emailSent   Boolean  @default(false) // Whether the email has been sent
-}
-

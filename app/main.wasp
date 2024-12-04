@@ -147,7 +147,7 @@ route DemoAppRoute { path: "/demo-app", to: DemoAppPage }
 page DemoAppPage {
   authRequired: true,
   component: import DemoAppPage from "@src/demo-ai-app/DemoAppPage"
-}
+} 
 
 action generateGptResponse {
   fn: import { generateGptResponse } from "@src/demo-ai-app/operations",
@@ -380,4 +380,11 @@ action deleteProject {
 query getProperties {
   fn: import { getProperties } from "@src/demo-ai-app/operations",
   entities: [Property]
+}
+
+route PropertyDetailsPageRoute { path: "/property/:id", to: PropertyDetailsPage }
+
+page PropertyDetailsPage {
+  authRequired: true,
+  component: import PropertyDetailsPage from "@src/demo-ai-app/PropertyDetailsPage"
 }
