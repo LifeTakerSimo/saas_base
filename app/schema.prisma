@@ -158,39 +158,138 @@ model City {
   cityName          String     @unique
   region            Region     @relation(fields: [regionId], references: [id])
   regionId          Int
-  avgPricePerSqm    Float?
-  avgRentalYield    Float?
-  population        Int?
-  economicZone      String?
-  unemploymentRate  Float?
-  tourismIndex      Float?
-  economicGrowthRate Float?
-  coastalCity       Boolean    @default(false)
-  crimeRate         Float?
-  numUniversities   Int?
-  airQualityIndex   Float?
-  climateZone       String?
   
-  // Metadata
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
+  // Basic Demographics & Market Data
+  population        Int?
+  avgPricePerSqm    Float?
+  avgPriceAppartement Float?
+  avgPriceVilla     Float?
+  investmentScore   Float?     // Score out of 10
+  
+  // Market Trends & Statistics
+  yearlyPriceVariation Float?
+  yearlyTransactionVariation Float?
+  
+  // Property Type Statistics
+  propertyTypeStats PropertyTypeStats[]
+  marketTrendStats  MarketTrendStats[]
+  priceHistoryStats PriceHistoryStats[]
   
   // Relations
-  properties        Property[] // Relation to Property
+  quartiers        Quartier[]
+  properties       Property[]
   
-  // Statistics tracking
-  lastUpdated       DateTime?
-  dataSource        String?    // Source of city data
-  dataQualityScore  Float?     // Score for data reliability
-  
-  // Market indicators
-  marketTrend       String?    // "Up", "Down", "Stable"
-  investmentRating  String?    // "A", "B", "C", etc.
+  // Metadata
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  dataSource       String?    // Source of city data
+  lastDataUpdate   DateTime?
   
   @@index([cityName])
   @@index([regionId])
   @@index([avgPricePerSqm])
-  @@index([avgRentalYield])
+}
+
+model PropertyTypeStats {
+  id              Int      @id @default(autoincrement())
+  city            City     @relation(fields: [cityId], references: [id])
+  cityId          Int
+  type            String   // 'Appartement', 'Villa', 'Maison'
+  percentage      Float    // Distribution percentage
+  priceVariation  Float    // Yearly price variation
+  transactionVariation Float // Yearly transaction variation
+  averagePrice    Float?   // Average price for this type
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([cityId])
+  @@index([type])
+}
+
+model MarketTrendStats {
+  id              Int      @id @default(autoincrement())
+  city            City     @relation(fields: [cityId], references: [id])
+  cityId          Int
+  month           DateTime
+  sales           Int
+  listings        Int
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([cityId])
+  @@index([month])
+}
+
+model PriceHistoryStats {
+  id              Int      @id @default(autoincrement())
+  city            City     @relation(fields: [cityId], references: [id])
+  cityId          Int
+  year            Int
+  averagePrice    Float
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([cityId])
+  @@index([year])
+}
+
+model Quartier {
+  id                Int      @id @default(autoincrement())
+  name              String
+  city              City     @relation(fields: [cityId], references: [id])
+  cityId            Int
+  
+  // Market Data
+  averagePricePerSqm Float?
+  priceEvolution    Float?
+  propertyCount     Int?
+  investmentScore   Float?   // Score out of 10
+  
+  // Demographics
+  population        Int?
+  medianAge        Float?
+  incomeLevel      String?   // 'Low', 'Medium', 'High'
+  
+  // Amenities
+  schoolCount      Int?
+  parkCount        Int?
+  shopCount        Int?
+  transportCount   Int?
+  
+  // Market Metrics
+  demandLevel      String?   // 'Low', 'Medium', 'High'
+  avgDaysOnMarket  Int?
+  minPrice         Float?
+  maxPrice         Float?
+  
+  // Property Type Distribution
+  propertyTypeDistribution PropertyTypeDistribution[]
+  
+  // Metadata
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([cityId])
+  @@index([name])
+  @@unique([cityId, name])
+}
+
+model PropertyTypeDistribution {
+  id              Int      @id @default(autoincrement())
+  quartier        Quartier @relation(fields: [quartierId], references: [id])
+  quartierId      Int
+  type            String   // 'Appartement', 'Villa', 'Maison'
+  percentage      Float
+  averagePrice    Float
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([quartierId])
+  @@index([type])
 }
 
 model Property {
@@ -266,6 +365,7 @@ model Property {
 }
 
 model Region {
+  code                            String?    
   id                              Int       @id @default(autoincrement())
   name                            String    @unique
   year                            Int

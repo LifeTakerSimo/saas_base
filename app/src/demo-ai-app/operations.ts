@@ -10,7 +10,7 @@ import type {
 import { HttpError } from 'wasp/server';
 import { GeneratedSchedule } from './schedule';
 import OpenAI from 'openai';
-import { Property } from '@prisma/client';
+import { Property, Region } from '@prisma/client';
 
 const openai = setupOpenAI();
 function setupOpenAI() {
@@ -277,4 +277,34 @@ export const getProperties = async (args: any, context: any): Promise<Property[]
   });
 
   return properties;
+};
+
+type RegionWithNumberValues = Omit<Region, 'tauxActivite' | 'tauxEmploi' | 'tauxSousEmploi' | 'tauxChomage' | 'code'> & {
+  tauxActivite: number | null;
+  tauxEmploi: number | null;
+  tauxSousEmploi: number | null;
+  tauxChomage: number | null;
+  code: string;
+};
+
+export const getRegionsData = async (_: void, ctx: any): Promise<RegionWithNumberValues[]> => {
+  const regions = await ctx.entities.Region.findMany({
+    where: {
+      name: {
+        not: 'National'
+      }
+    },
+    orderBy: {
+      name: 'asc'
+    }
+  });
+
+  // Convert Decimal values to numbers
+  return regions.map((region: Region) => ({
+    ...region,
+    tauxActivite: region.tauxActivite ? Number(region.tauxActivite) : null,
+    tauxEmploi: region.tauxEmploi ? Number(region.tauxEmploi) : null,
+    tauxSousEmploi: region.tauxSousEmploi ? Number(region.tauxSousEmploi) : null,
+    tauxChomage: region.tauxChomage ? Number(region.tauxChomage) : null,
+  }));
 };
