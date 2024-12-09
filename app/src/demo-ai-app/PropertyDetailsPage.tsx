@@ -170,7 +170,7 @@ function PropertyDetails({ property }: { property: Property }) {
         <img 
           src={property.imageUrl} 
           alt={property.title}
-          className="w-full h-[400px] object-cover rounded-xl shadow-lg"
+          className="w-full h-[400px] object-cover rounded-xl shadow-lg border border-gray-700"
         />
         <div className="grid grid-cols-2 gap-4">
           {property.images.slice(0, 4).map((img, idx) => (
@@ -178,7 +178,7 @@ function PropertyDetails({ property }: { property: Property }) {
               key={idx}
               src={img}
               alt={`${property.title} ${idx + 1}`}
-              className="w-full h-[195px] object-cover rounded-xl shadow-lg hover:scale-105 transition-transform duration-300"
+              className="w-full h-[195px] object-cover rounded-xl shadow-lg hover:scale-105 transition-transform duration-300 border border-gray-700"
             />
           ))}
         </div>
@@ -196,7 +196,7 @@ function PropertyDetails({ property }: { property: Property }) {
           { icon: "📍", label: "Quartier", value: property.quartier },
           { icon: "📅", label: "Disponibilité", value: "Immédiate" }
         ].map((item, idx) => (
-          <div key={idx} className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 hover:border-purple-500/30 transition-colors">
+          <div key={idx} className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 hover:border-purple-500 transition-colors">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xl">{item.icon}</span>
               <span className="text-gray-400 text-sm">{item.label}</span>
@@ -207,13 +207,13 @@ function PropertyDetails({ property }: { property: Property }) {
       </div>
 
       {/* Description */}
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
         <h3 className="text-xl font-semibold text-white mb-4">Description</h3>
         <p className="text-gray-300 leading-relaxed">{property.description}</p>
       </div>
 
       {/* Features */}
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
         <h3 className="text-xl font-semibold text-white mb-4">Caractéristiques</h3>
         <div className="grid grid-cols-3 gap-4">
           {property.features.map((feature, idx) => (
