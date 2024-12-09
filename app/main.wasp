@@ -388,3 +388,8 @@ page PropertyDetailsPage {
   authRequired: true,
   component: import PropertyDetailsPage from "@src/demo-ai-app/PropertyDetailsPage"
 }
+
+query getRegionsData {
+  fn: import { getRegionsData } from "@src/demo-ai-app/operations",
+  entities: [Region]
+}
